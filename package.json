@@ -1,0 +1,42 @@
+{
+  "name": "ts-clibs-list",
+  "version": "1.0.0",
+  "description": "TypeScript port of clibs/list - a simple, generic, doubly-linked list with iterator support",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist/",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "list",
+    "linked-list",
+    "doubly-linked-list",
+    "iterator",
+    "clibs",
+    "typescript",
+    "c-port"
+  ],
+  "author": "Scott Moore",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ScottMoore0/ts-clibs-list.git"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.2",
+    "typescript": "^6.0.3"
+  }
+}
