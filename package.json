@@ -1,0 +1,41 @@
+{
+  "name": "ts-pcg-basic",
+  "version": "1.0.0",
+  "description": "A zero-dependency TypeScript port of pcg-c-basic, the PCG random number generator basic C implementation by Melissa O'Neill",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist/",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "pcg",
+    "random",
+    "rng",
+    "prng",
+    "pcg32",
+    "typescript"
+  ],
+  "author": "Scott Moore",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ScottMoore0/ts-pcg-basic.git"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.2",
+    "typescript": "^6.0.3"
+  }
+}
