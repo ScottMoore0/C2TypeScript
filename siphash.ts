@@ -145,8 +145,8 @@ function __safe_div_i64(a: bigint, b: bigint): bigint { if (b === 0n) throw new 
 function __safe_mod_i64(a: bigint, b: bigint): bigint { if (b === 0n) throw new Error('Division by zero'); return a % b; }
 
 export function siphash(_in: any | null, inlen: number, k: CPtr | null, out: CPtr | null, outlen: number): number {
-  let ni = cptr_clone((_in)); /* &ref */
-  let kk = cptr_clone((k)); /* &ref */
+  let ni = cptr_clone(cptr_clone((_in))); /* &ref */
+  let kk = cptr_clone(cptr_clone((k))); /* &ref */
   (((((!!((((((outlen) >>> 0) == ((8) >>> 0)) || (((outlen) >>> 0) == ((16) >>> 0))) ? 1 : 0))) || (((): any => { _wassert("(outlen == 8) || (outlen == 16)", "C:/Users/scomo/cpp-to-ts/cpp-to-ts/compiler/tests/real-world/siphash/src/siphash.c", ((Math.trunc(+((95)))) >>> 0)); return 0; })())) ? 1 : 0)));
   let v0 = (8317987319222330741n);
   let v1 = (7237128888997146477n);
