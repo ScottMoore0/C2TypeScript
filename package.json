@@ -1,0 +1,43 @@
+{
+  "name": "ts-mtwister",
+  "version": "1.0.0",
+  "description": "TypeScript port of ESultanik/mtwister, the Mersenne Twister flavor that uses the *6069 LCG seeding constant. For canonical MT19937 sequences see ts-mt19937.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist/",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "mtwister",
+    "mt19937",
+    "mersenne-twister",
+    "random",
+    "prng",
+    "typescript",
+    "deterministic",
+    "c-to-ts"
+  ],
+  "author": "Scott Moore",
+  "license": "BSD-3-Clause",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ScottMoore0/ts-mtwister.git"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.2",
+    "typescript": "^6.0.3"
+  }
+}
