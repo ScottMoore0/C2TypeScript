@@ -1,17 +1,3 @@
-/**
- * ts-mtwister
- *
- * TypeScript port of ESultanik/mtwister, Evan Sultanik's C implementation
- * of the Mersenne Twister PRNG (based on the algorithm by Makoto Matsumoto
- * and Takuji Nishimura, 1997). Note: ESultanik's mtwister uses Knuth's
- * *6069 linear-congruential seeding constant rather than the canonical
- * MT19937 *1812433253 recurrence, so output sequences differ from textbook
- * MT19937. For canonical MT19937 sequences see the ts-mt19937 package.
- *
- * TypeScript translation: copyright (c) 2026 Scott Moore.
- * Licensed under the BSD-3-Clause License.
- */
-
 function cptr_from_string(s: string): any { const buf = new Uint8Array(s.length + 1); for (let i = 0; i < s.length; i++) buf[i] = s.charCodeAt(i); buf[s.length] = 0; return {buf, off: 0}; }
 function __safe_div(a: number, b: number): number { if (b === 0) throw new Error('Division by zero'); return Math.trunc(a / b); }
 function __safe_mod(a: number, b: number): number { if (b === 0) throw new Error('Division by zero'); return a % b; }
