@@ -1,12 +1,3 @@
-/**
- * ts-fnv-hash - hash_32.ts
- *
- * Fowler-Noll-Vo (FNV) 32-bit hash.
- *
- * Original C by Landon Curt Noll; placed in the public domain by the author.
- * TypeScript translation: copyright (c) 2026 Scott Moore (also released under
- * the same public-domain terms).
- */
 function __builtin_unreachable(): never { throw new Error('__builtin_unreachable reached (C17 §6.5.2.2 UB)'); }
 function __safe_div(a: number, b: number): number { if (b === 0) throw new Error('Division by zero'); return Math.trunc(a / b); }
 function __safe_mod(a: number, b: number): number { if (b === 0) throw new Error('Division by zero'); return a % b; }
@@ -609,20 +600,20 @@ export class fnv1a_64_test_vector {
 (fnv1a_64_test_vector as any).__fieldOffsets = [0,8];
 
 export function fnv_32_buf(buf: any | null, len: number, hval: Fnv32_t): Fnv32_t {
-  let bp = cptr_clone((buf)); /* &ref */
+  let bp = cptr_clone(cptr_clone((buf))); /* &ref */
   let be = cptr_offset(bp, ((len) >>> 0)); /* &ref */
   while (((__l: any, __r: any) => { const __lb = __l && __l.buf; const __rb = __r && __r.buf; if (__lb && __rb && __lb === __rb) return ((__l.off ?? 0) < (__r.off ?? 0)); if (__lb || __rb) return (__cpp2ts_ptr_to_intptr(__l) < __cpp2ts_ptr_to_intptr(__r)); return ((__l ?? 0) < (__r ?? 0)); })(bp, be)) {
-    hval = u32(hval + u32(u32(u32(u32(((hval << 1) >>> 0) + ((hval << 4) >>> 0)) + ((hval << 7) >>> 0)) + ((hval << 8) >>> 0)) + ((hval << 24) >>> 0)));
+    hval = u32(hval + u32(u32(u32(u32(((((hval) >>> 0) << 1) >>> 0) + ((((hval) >>> 0) << 4) >>> 0)) + ((((hval) >>> 0) << 7) >>> 0)) + ((((hval) >>> 0) << 8) >>> 0)) + ((((hval) >>> 0) << 24) >>> 0)));
     hval ^= Math.trunc(+((((bp.buf[bp.off++])) & 0xFF)));
   }
-  return hval;
+  return ((hval) >>> 0);
 }
 
 export function fnv_32_str(str: string, hval: Fnv32_t): Fnv32_t {
-  let s = cptr_clone((str)); /* &ref */
+  let s = cptr_clone(cptr_clone((str))); /* &ref */
   while (((s.buf[s.off]) & 0xFF)) {
-    hval = u32(hval + u32(u32(u32(u32(((hval << 1) >>> 0) + ((hval << 4) >>> 0)) + ((hval << 7) >>> 0)) + ((hval << 8) >>> 0)) + ((hval << 24) >>> 0)));
+    hval = u32(hval + u32(u32(u32(u32(((((hval) >>> 0) << 1) >>> 0) + ((((hval) >>> 0) << 4) >>> 0)) + ((((hval) >>> 0) << 7) >>> 0)) + ((((hval) >>> 0) << 8) >>> 0)) + ((((hval) >>> 0) << 24) >>> 0)));
     hval ^= Math.trunc(+((((s.buf[s.off++])) & 0xFF)));
   }
-  return hval;
+  return ((hval) >>> 0);
 }

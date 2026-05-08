@@ -1,12 +1,3 @@
-/**
- * ts-fnv-hash - hash_64.ts
- *
- * Fowler-Noll-Vo (FNV) 64-bit hash.
- *
- * Original C by Landon Curt Noll; placed in the public domain by the author.
- * TypeScript translation: copyright (c) 2026 Scott Moore (also released under
- * the same public-domain terms).
- */
 function __builtin_unreachable(): never { throw new Error('__builtin_unreachable reached (C17 §6.5.2.2 UB)'); }
 function __safe_div(a: number, b: number): number { if (b === 0) throw new Error('Division by zero'); return Math.trunc(a / b); }
 function __safe_mod(a: number, b: number): number { if (b === 0) throw new Error('Division by zero'); return a % b; }
@@ -611,7 +602,7 @@ export class fnv1a_64_test_vector {
 export const fnv0_64_init = Object.assign(new Fnv64_t(), { w32: [((0) >>> 0), ((0) >>> 0)] });
 export const fnv1_64_init = Object.assign(new Fnv64_t(), { w32: [((2216829733) >>> 0), ((3421674724) >>> 0)] });
 export function fnv_64_buf(buf: any | null, len: number, hval: Fnv64_t): Fnv64_t {
-  let bp = cptr_clone((buf)); /* &ref */
+  let bp = cptr_clone(cptr_clone((buf))); /* &ref */
   let be = cptr_offset(bp, ((len) >>> 0)); /* &ref */
   let val = new Array(4).fill(0);
   let tmp = new Array(4).fill(0);
@@ -642,7 +633,7 @@ export function fnv_64_buf(buf: any | null, len: number, hval: Fnv64_t): Fnv64_t
 }
 
 export function fnv_64_str(str: string, hval: Fnv64_t): Fnv64_t {
-  let s = cptr_clone((str)); /* &ref */
+  let s = cptr_clone(cptr_clone((str))); /* &ref */
   let val = new Array(4).fill(0);
   let tmp = new Array(4).fill(0);
   val[0] = ((((hval.w32[0]) >>> 0)) >>> 0);
