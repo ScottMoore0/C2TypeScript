@@ -1,0 +1,41 @@
+{
+  "name": "ts-inih",
+  "version": "1.0.0",
+  "description": "A zero-dependency TypeScript port of inih, a simple INI file parser",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist/",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "ini",
+    "parser",
+    "config",
+    "configuration",
+    "inih",
+    "typescript"
+  ],
+  "author": "Scott Moore",
+  "license": "BSD-3-Clause",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ScottMoore0/ts-inih.git"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.2",
+    "typescript": "^6.0.3"
+  }
+}
