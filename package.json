@@ -1,0 +1,42 @@
+{
+  "name": "ts-fnv-hash",
+  "version": "1.0.0",
+  "description": "A zero-dependency TypeScript port of the Fowler-Noll-Vo (FNV) hash by Landon Curt Noll. 32-bit and 64-bit FNV-1 for byte buffers and strings.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist/",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "fnv",
+    "fnv-1",
+    "fnv-1a",
+    "hash",
+    "fowler-noll-vo",
+    "typescript",
+    "zero-dependency"
+  ],
+  "author": "Scott Moore",
+  "license": "Unlicense",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ScottMoore0/ts-fnv-hash.git"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.2",
+    "typescript": "^6.0.3"
+  }
+}
