@@ -1,0 +1,40 @@
+{
+  "name": "ts-rxi-log",
+  "version": "1.0.0",
+  "description": "TypeScript port of rxi/log.c, a simple printf-style logging library with six severity levels and pluggable callbacks.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist/",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "rxi",
+    "log",
+    "logger",
+    "logging",
+    "c-to-ts"
+  ],
+  "author": "Scott Moore",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ScottMoore0/ts-rxi-log.git"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.2",
+    "typescript": "^6.0.3"
+  }
+}
