@@ -1,15 +1,3 @@
-/**
- * ts-pcg-basic
- *
- * TypeScript port of pcg-c-basic, the basic C implementation of the PCG
- * (Permuted Congruential Generator) family of random number generators.
- *
- * Original C version: copyright (c) 2014-2017 Melissa O'Neill
- *   (PCG Project, https://www.pcg-random.org).
- * TypeScript translation: copyright (c) 2026 Scott Moore.
- * Licensed under the Apache License, Version 2.0.
- */
-
 function cptr_from_string(s: string): any { const buf = new Uint8Array(s.length + 1); for (let i = 0; i < s.length; i++) buf[i] = s.charCodeAt(i); buf[s.length] = 0; return {buf, off: 0}; }
 function __safe_div(a: number, b: number): number { if (b === 0) throw new Error('Division by zero'); return Math.trunc(a / b); }
 function __safe_mod(a: number, b: number): number { if (b === 0) throw new Error('Division by zero'); return a % b; }
