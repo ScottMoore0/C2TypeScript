@@ -1,0 +1,41 @@
+{
+  "name": "ts-siphash",
+  "version": "1.0.0",
+  "description": "A zero-dependency TypeScript port of SipHash, the keyed pseudorandom function by Jean-Philippe Aumasson and Daniel J. Bernstein. SipHash-2-4 with 64-bit and 128-bit output.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist/",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "siphash",
+    "hash",
+    "keyed-hash",
+    "mac",
+    "crypto",
+    "c-to-ts"
+  ],
+  "author": "Scott Moore",
+  "license": "CC0-1.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ScottMoore0/ts-siphash.git"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.2",
+    "typescript": "^6.0.3"
+  }
+}
