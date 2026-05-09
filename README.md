@@ -1,82 +1,174 @@
 # ts-mt19937
 
-Zero-dependency TypeScript port of the canonical Matsumoto/Nishimura **MT19937** Mersenne Twister reference C implementation, [mt19937ar.c](http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/MT2002/CODES/mt19937ar.c) (the "improved 2002/1/26" version that uses the `1812433253` seeding constant).
+A direct TypeScript translation of the canonical Matsumoto/Nishimura MT19937 Mersenne Twister.
 
-This package preserves the textbook reference vectors. After `init_genrand(5489)`, the first five `genrand_int32()` outputs are the canonical:
+If you find this project useful, you can support this and further ports at [ko-fi.com/scottmoore0](https://ko-fi.com/scottmoore0).
 
-```
-3499211612, 581869302, 3890346734, 3586334585, 545404204
-```
+## License
 
-If you are looking for the **Sultanik** flavor (different seeding constant `6069`, different output stream), see [`ts-mtwister`](https://www.npmjs.com/package/ts-mtwister) instead. The two packages implement related but non-identical algorithms.
+BSD-3-Clause License
+
+> MT19937 (original C version) - Copyright (C) 1997-2002, Makoto Matsumoto and Takuji Nishimura, All rights reserved.
+>
+> ts-mt19937 (direct TypeScript translation) - Copyright (c) 2026 Scott Moore
+>
+> Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+>
+>   1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+>
+>   2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+>
+>   3. The names of its contributors may not be used to endorse or promote products derived from this software without specific prior written permission.
+>
+> THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+## Usage
+
+This is a direct translation of MT19937 from C to TypeScript. The public API, internal state layout, and output sequence are preserved as faithfully as possible.
+
+To read more about MT19937, please see the [original Matsumoto/Nishimura reference C source](http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/MT2002/CODES/mt19937ar.c) and the [MT home page](http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/emt.html).
+
+The key differences from the C version are:
+- **Zero dependencies** - all C standard library shims (memory management, integer arithmetic helpers) are contained in the source itself.
+- **No manual memory management** - JavaScript's garbage collector replaces `malloc`/`free`.
+- **ES modules** - files are linked with standard `import`/`export` statements.
+- **Module-global state** - the `mt[624]` state vector and the `mti` counter are file-scope `static` in the C source and translate to module-private bindings; the eight public functions are the only re-exports.
+- **Single-threaded** - JavaScript's event loop model means thread-safety concerns from the C version do not apply.
 
 ## Installation
+
+Install from npm:
 
 ```bash
 npm install ts-mt19937
 ```
 
-## Usage
+Or install with your preferred package manager:
 
-```typescript
-import {
-  init_genrand,
-  init_by_array,
-  genrand_int32,
-  genrand_int31,
-  genrand_real1,
-  genrand_real2,
-  genrand_real3,
-  genrand_res53,
-} from 'ts-mt19937';
-
-// Seed by single 32-bit integer.
-init_genrand(5489);
-console.log(genrand_int32()); // 3499211612
-console.log(genrand_int32()); //  581869302
-console.log(genrand_int32()); // 3890346734
-
-// Seed by an array of integers (matches the upstream demo vectors).
-// `init_by_array` reads its first argument through the C-pointer model
-// the translator uses, so wrap a Uint8Array-backed key buffer in a
-// `{ buf, off }` CPtr-style record:
-const keyWords = new Uint32Array([0x123, 0x234, 0x345, 0x456]);
-const keyPtr = { buf: new Uint8Array(keyWords.buffer), off: 0 };
-init_by_array(keyPtr, 4);
-console.log(genrand_int32()); // 1067595299
-console.log(genrand_int32()); //  955945823
-
-// Real-valued draws.
-init_genrand(5489);
-console.log(genrand_real1()); // [0,1] inclusive, divided by 2^32 - 1
-console.log(genrand_real2()); // [0,1) divided by 2^32
-console.log(genrand_real3()); // (0,1) divided by 2^32 with +0.5 offset
-console.log(genrand_res53()); // [0,1) with 53 bits of precision
+```bash
+yarn add ts-mt19937
+pnpm add ts-mt19937
 ```
 
-State is module-global, exactly as in the original C source - the eight public functions all read and write a single shared `mt[624]` state vector.
+Alternatively, because the core library is contained in a single self-contained file, you can copy it directly into your project:
 
-## API
+```bash
+cp mt19937ar.ts /path/to/your/project/src/
+```
 
-| Function | Returns | Notes |
-|----------|---------|-------|
-| `init_genrand(s)` | `void` | Seed with a single 32-bit integer. |
-| `init_by_array(init_key, key_length)` | `void` | Seed by an array. `init_key` is the C `unsigned long init_key[]`; pass a CPtr-style record `{ buf: Uint8Array, off: 0 }` whose `buf` holds `key_length` little-endian uint32s. |
-| `genrand_int32()` | `number` | Uniform 32-bit unsigned integer in `[0, 0xffffffff]`. |
-| `genrand_int31()` | `number` | Uniform 31-bit unsigned integer in `[0, 0x7fffffff]`. |
-| `genrand_real1()` | `number` | Uniform double in `[0, 1]` (divided by 2^32 - 1). |
-| `genrand_real2()` | `number` | Uniform double in `[0, 1)` (divided by 2^32). |
-| `genrand_real3()` | `number` | Uniform double in `(0, 1)`. |
-| `genrand_res53()` | `number` | Uniform double in `[0, 1)` with 53 bits of precision. |
+Or clone the repository:
 
-## Notes on the port
+```bash
+git clone https://github.com/ScottMoore0/ts-mt19937.git
+```
 
-This is a mechanical C-to-TypeScript translation. The generated source preserves the original C structure and emits `// BRIDGE:` comments at every place where a C concept (CPtr pointer model, struct-as-class, pointer arithmetic, etc.) is modeled in TypeScript. The `mt[]` state and the `mti` counter are file-scope `static` in the C source and are translated as module-private bindings; the eight public functions in the API table above are the only re-exports.
+## Importing
 
-The `index.ts` facade hides the runtime helpers (`cptr_*`, `__safe_*`, etc.) that ship in the compiled output but are not part of the package's public surface.
+When installed from npm:
 
-## License
+```typescript
+import { init_genrand, genrand_int32, genrand_real2 } from 'ts-mt19937';
+```
 
-BSD-3-Clause. See [LICENSE](./LICENSE). The upstream MT19937 C reference is BSD-3 licensed; this TypeScript port preserves those terms verbatim.
+When using the source file directly:
 
-Original C version: Copyright (C) 1997 - 2002, Makoto Matsumoto and Takuji Nishimura. TypeScript translation copyright (c) 2026 Scott Moore.
+```typescript
+import { init_genrand, genrand_int32, genrand_real2 } from './mt19937ar.js';
+```
+
+### Quick example
+
+```typescript
+import { init_genrand, genrand_int32 } from 'ts-mt19937';
+
+init_genrand(5489);
+for (let i = 0; i < 5; i++) {
+  console.log(genrand_int32());
+}
+// 3499211612
+//  581869302
+// 3890346734
+// 3586334585
+//  545404204
+```
+
+## Building
+
+Unlike the original C version, ts-mt19937 requires no compilation step. It is valid TypeScript (and JavaScript) source code that runs directly in Node.js, Deno, Bun, or modern browsers.
+
+## TypeScript Compiler
+
+If your project uses TypeScript, add the file to your `tsconfig.json`:
+
+```json
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "strict": false,
+    "esModuleInterop": true
+  },
+  "include": ["src/**/*.ts"]
+}
+```
+
+> **Important:** The translated code uses patterns that emulate C pointer arithmetic and unsafe type casts. It is intentionally **not** `strict`-compliant. You should isolate it in its own module (as shown above) and wrap it in a strictly-typed API surface for the rest of your application.
+
+## Node.js / tsx
+
+Run directly without pre-compilation:
+
+```bash
+npx tsx mt19937ar.ts
+```
+
+Or with Deno:
+
+```bash
+deno run --allow-all mt19937ar.ts
+```
+
+## Bundling
+
+Because the library is self-contained with zero `npm` dependencies, it bundles cleanly with esbuild, Rollup, or Vite:
+
+```bash
+npx esbuild mt19937ar.ts --bundle --platform=node --outfile=dist/mt19937ar.js
+```
+
+## Data Structure
+
+MT19937's state is a 624-word vector plus an index counter. In the C source this is a pair of file-scope `static` variables; the TypeScript port preserves that exact shape as module-private bindings (i.e. there is no exported state class - state is implicit, just like in the canonical C). The eight public functions all read and write the same shared state.
+
+`init_by_array` takes an `unsigned long init_key[]` in C. The TypeScript port models that argument with the translator's CPtr shape `{ buf: Uint8Array, off: number }` whose `buf` holds `key_length` little-endian uint32s.
+
+## Tests
+
+The repository includes the original MT19937 reference vectors and a translated test framework. To run the tests:
+
+```bash
+npm test
+```
+
+Test data is located in:
+- `tests/` - reference vector tests for `init_genrand(5489)` and `init_by_array`, matching Matsumoto/Nishimura's `mt19937ar.out` fixture.
+
+## Caveats
+
+The following limitations from the original C version still apply:
+
+- **Not cryptographically secure.** MT19937 is a deterministic PRNG; given enough output an attacker can recover internal state. Do not use for keys, tokens, or any security-sensitive purpose.
+- **Module-global state.** All eight public functions share one `mt[624]` vector. Two callers in the same module cannot draw from independent streams without re-seeding.
+- **The first five `genrand_int32()` outputs after `init_genrand(5489)` are `3499211612, 581869302, 3890346734, 3586334585, 545404204`.** These match Matsumoto/Nishimura's `mt19937ar.out` reference fixture and serve as the canonical sanity check.
+
+The following C-specific caveats **do not apply** to the TypeScript version:
+
+- **Memory leaks** - JavaScript's garbage collector eliminates manual `malloc`/`free` concerns.
+- **Thread safety** - JavaScript is single-threaded; no special thread-safety measures are needed.
+- **C standard compliance** - The code runs wherever TypeScript/JavaScript runs (Node.js, Deno, Bun, browsers).
+
+## Acknowledgements
+
+- [Makoto Matsumoto and Takuji Nishimura](http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/emt.html) - original authors of the MT19937 algorithm and the canonical C reference implementation.
+- The [Hiroshima University MT page](http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/MT2002/CODES/mt19937ar.c) - upstream source for `mt19937ar.c`.
