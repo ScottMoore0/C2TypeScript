@@ -18,6 +18,7 @@
   ],
   "scripts": {
     "build": "tsc",
+    "test": "node --test --experimental-strip-types tests/vectors.test.ts",
     "prepublishOnly": "npm run build"
   },
   "keywords": [
