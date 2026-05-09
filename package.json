@@ -18,6 +18,7 @@
   ],
   "scripts": {
     "build": "tsc",
+    "test": "node tests/vectors.test.mjs",
     "prepublishOnly": "npm run build"
   },
   "keywords": [
