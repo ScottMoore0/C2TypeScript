@@ -1,134 +1,197 @@
 # ts-jsmn
 
-A zero-dependency TypeScript port of [jsmn](https://github.com/zserge/jsmn), a minimal JSON tokenizer in ANSI C by Serge Zaitsev.
+A direct TypeScript translation of the minimal JSON tokenizer in ANSI C.
 
-jsmn is intentionally tiny. It does not build a parse tree, allocate per-element objects, or copy strings out of the input. Instead, it walks the input once and emits a flat array of tokens, each describing one JSON element by its type and its `[start, end)` byte range in the original buffer. The caller decides how to interpret the tokens.
+If you find this project useful, you can support this and further ports at [ko-fi.com/scottmoore0](https://ko-fi.com/scottmoore0).
 
-## Installation
+## License
 
-```
-npm install ts-jsmn
-```
+MIT License
+
+> jsmn (original C version) - Copyright (c) 2010 Serge Zaitsev and jsmn contributors
+>
+> ts-jsmn (direct TypeScript translation) - Copyright (c) 2026 Scott Moore
+>
+> Permission is hereby granted, free of charge, to any person obtaining a copy
+> of this software and associated documentation files (the "Software"), to deal
+> in the Software without restriction, including without limitation the rights
+> to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+> copies of the Software, and to permit persons to whom the Software is
+> furnished to do so, subject to the following conditions:
+>
+> The above copyright notice and this permission notice shall be included in
+> all copies or substantial portions of the Software.
+>
+> THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+> IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+> FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+> AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+> LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+> OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+> THE SOFTWARE.
 
 ## Usage
 
-```ts
-import {
-  jsmn_parser,
-  jsmntok,
-  jsmn_init,
-  jsmn_parse,
-  JSMN_OBJECT,
-  JSMN_ARRAY,
-  JSMN_STRING,
-  JSMN_PRIMITIVE,
-} from 'ts-jsmn';
+This is a direct translation of jsmn from C to TypeScript. The public API, data structures, and behavior are preserved as faithfully as possible.
 
-const json = '{"a":1,"b":[true,null]}';
+To read more about jsmn, please see the [original jsmn repository](https://github.com/zserge/jsmn).
 
-// Convert the JSON text to the byte-buffer shape jsmn_parse expects.
+The key differences from the C version are:
+- **Zero dependencies** - all C standard library shims (memory management, string handling, formatted I/O) are contained in the source itself.
+- **No manual memory management** - JavaScript's garbage collector replaces `malloc`/`free`. The original jsmn already avoids dynamic allocation entirely; the port preserves that property by accepting a caller-allocated `jsmntok[]`.
+- **ES modules** - files are linked with standard `import`/`export` statements.
+- **Byte-buffer input** - the input string is passed as a `{ buf: Uint8Array, off: number }` CPtr rather than a C `const char*`.
+- **Single-threaded** - JavaScript's event loop model means thread-safety concerns from the C version do not apply.
+
+## Installation
+
+Install from npm:
+
+```bash
+npm install ts-jsmn
+```
+
+Or install with your preferred package manager:
+
+```bash
+yarn add ts-jsmn
+pnpm add ts-jsmn
+```
+
+Alternatively, because the core library is contained in a single self-contained file, you can copy it directly into your project:
+
+```bash
+cp jsmn.ts /path/to/your/project/src/
+```
+
+Or clone the repository:
+
+```bash
+git clone https://github.com/ScottMoore0/ts-jsmn.git
+```
+
+## Importing
+
+When installed from npm:
+
+```typescript
+import { jsmn_parser, jsmntok, jsmn_init, jsmn_parse, JSMN_OBJECT, JSMN_STRING, JSMN_PRIMITIVE } from 'ts-jsmn';
+```
+
+When using the source file directly:
+
+```typescript
+import { jsmn_parser, jsmntok, jsmn_init, jsmn_parse, JSMN_OBJECT, JSMN_STRING, JSMN_PRIMITIVE } from './jsmn.js';
+```
+
+### Quick example
+
+```typescript
+import { jsmn_parser, jsmntok, jsmn_init, jsmn_parse, JSMN_STRING } from 'ts-jsmn';
+
+const json = '{"k":"v"}';
 const bytes = new Uint8Array(json.length);
 for (let i = 0; i < json.length; i++) bytes[i] = json.charCodeAt(i);
-const js = { buf: bytes, off: 0 };
 
-// Allocate an array of tokens. Pre-size it to a comfortable upper bound
-// for your input. jsmn returns JSMN_ERROR_NOMEM if it runs out of room.
-const tokens: jsmntok[] = Array.from({ length: 32 }, () => new jsmntok());
-
+const tokens: jsmntok[] = Array.from({ length: 8 }, () => new jsmntok());
 const parser = new jsmn_parser();
 jsmn_init(parser);
+const n = jsmn_parse(parser, { buf: bytes, off: 0 }, json.length, tokens, tokens.length);
 
-const n = jsmn_parse(parser, js, json.length, tokens, tokens.length);
+const valTok = tokens[2]; // 0=object, 1=key "k", 2=value "v"
+console.log(n, valTok.type === JSMN_STRING, json.slice(valTok.start, valTok.end));
+// 3 true v
+```
 
-// n is the number of tokens used (>= 0), or one of:
-//   JSMN_ERROR_NOMEM (-1)  not enough tokens
-//   JSMN_ERROR_INVAL (-2)  invalid character
-//   JSMN_ERROR_PART  (-3)  string ended mid-token
-console.log('token count:', n);
+## Building
 
-for (let i = 0; i < n; i++) {
-  const t = tokens[i];
-  let kind = 'unknown';
-  if (t.type === JSMN_OBJECT)    kind = 'object';
-  else if (t.type === JSMN_ARRAY) kind = 'array';
-  else if (t.type === JSMN_STRING) kind = 'string';
-  else if (t.type === JSMN_PRIMITIVE) kind = 'primitive';
-  const slice = json.slice(t.start, t.end);
-  console.log(`${i}: ${kind} [${t.start}, ${t.end}) size=${t.size}  -> ${slice}`);
+Unlike the original C version, ts-jsmn requires no compilation step. It is valid TypeScript (and JavaScript) source code that runs directly in Node.js, Deno, Bun, or modern browsers.
+
+## TypeScript Compiler
+
+If your project uses TypeScript, add the file to your `tsconfig.json`:
+
+```json
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "strict": false,
+    "esModuleInterop": true
+  },
+  "include": ["src/**/*.ts"]
 }
 ```
 
-For the JSON above, jsmn returns 7 tokens:
+> **Important:** The translated code uses patterns that emulate C pointer arithmetic and unsafe type casts. It is intentionally **not** `strict`-compliant. You should isolate it in its own module (as shown above) and wrap it in a strictly-typed API surface for the rest of your application.
 
+## Node.js / tsx
+
+Run directly without pre-compilation:
+
+```bash
+npx tsx jsmn.ts
 ```
-0: object    [0, 23)  size=2   -> {"a":1,"b":[true,null]}
-1: string    [2, 3)   size=1   -> a
-2: primitive [5, 6)   size=0   -> 1
-3: string    [8, 9)   size=1   -> b
-4: array     [11, 22) size=2   -> [true,null]
-5: primitive [12, 16) size=0   -> true
-6: primitive [17, 21) size=0   -> null
+
+Or with Deno:
+
+```bash
+deno run --allow-all jsmn.ts
+```
+
+## Bundling
+
+Because the library is self-contained with zero `npm` dependencies, it bundles cleanly with esbuild, Rollup, or Vite:
+
+```bash
+npx esbuild jsmn.ts --bundle --platform=node --outfile=dist/jsmn.js
+```
+
+## Data Structure
+
+The C `struct jsmntok_t` has been translated to a TypeScript class with identical field names:
+
+```typescript
+class jsmntok {
+  type: number = 0;   // JSMN_OBJECT | JSMN_ARRAY | JSMN_STRING | JSMN_PRIMITIVE
+  start: number = 0;  // inclusive byte offset of first character
+  end: number = 0;    // exclusive byte offset just past the last character
+  size: number = 0;   // child count for objects/arrays/keys, 0 otherwise
+}
 ```
 
 The `size` field on object and array tokens is the count of immediate children. The `size` field on a string that is an object key is the number of value tokens it owns (always 1 for well-formed JSON). The `size` field on a primitive (number, true, false, null) or value-string is 0.
 
-## API
+Token types are exposed as the constants `JSMN_UNDEFINED`, `JSMN_OBJECT`, `JSMN_ARRAY`, `JSMN_STRING`, `JSMN_PRIMITIVE`. Error codes are `JSMN_ERROR_NOMEM` (-1, not enough tokens), `JSMN_ERROR_INVAL` (-2, invalid character), `JSMN_ERROR_PART` (-3, partial input).
 
-```ts
-// Token shape. Mirrors the C struct jsmntok_t.
-class jsmntok {
-  type: number;   // JSMN_OBJECT | JSMN_ARRAY | JSMN_STRING | JSMN_PRIMITIVE
-  start: number;  // inclusive byte offset of first character
-  end: number;    // exclusive byte offset just past the last character
-  size: number;   // child count (objects/arrays/keys), 0 otherwise
-}
+## Tests
 
-// Parser state. Hold this across multiple jsmn_parse calls if you want
-// to feed jsmn a stream of bytes one chunk at a time.
-class jsmn_parser {
-  pos: number;
-  toknext: number;
-  toksuper: number;
-}
+The repository includes the upstream jsmn fixtures and the translated test framework. To run the tests:
 
-// Reset a parser to its initial state.
-function jsmn_init(parser: jsmn_parser): void;
-
-// Parse js (a {buf: Uint8Array, off: number} view of len bytes) into
-// the pre-allocated tokens array. Returns the number of tokens used,
-// or one of the JSMN_ERROR_* negative codes.
-function jsmn_parse(
-  parser: jsmn_parser,
-  js: { buf: Uint8Array; off: number },
-  len: number,
-  tokens: jsmntok[],
-  num_tokens: number,
-): number;
-
-// Token type constants
-const JSMN_UNDEFINED: number;  // 0
-const JSMN_OBJECT: number;     // 1
-const JSMN_ARRAY: number;      // 2
-const JSMN_STRING: number;     // 4
-const JSMN_PRIMITIVE: number;  // 8
-
-// Error codes
-const JSMN_ERROR_NOMEM: number;  // -1, not enough tokens
-const JSMN_ERROR_INVAL: number;  // -2, invalid character
-const JSMN_ERROR_PART: number;   // -3, partial input (string ran past end)
+```bash
+npm test
 ```
 
-## Why "tokens, not a tree"
+Test data is located in:
+- `tests/` - object, array, primitive, and partial-input parsing scenarios.
 
-jsmn is designed for embedded and constrained environments where allocating a tree is expensive or impossible. Reading a JSON value is a slice of the input by `[start, end)`. Walking nested structures means scanning the next `size` tokens (recursively for objects/arrays). This is the C library's defining trait and ts-jsmn preserves it as-is.
+## Caveats
 
-## License
+The following limitations from the original C version still apply:
 
-MIT. See [LICENSE](./LICENSE).
+- **Tokens, not a tree** - jsmn does not allocate value objects. It returns a flat array of `[start, end)` byte ranges; callers slice the input buffer themselves.
+- **Pre-sized token array** - the caller must allocate `jsmntok[]` up front. Running out of room returns `JSMN_ERROR_NOMEM` and the caller may grow the array and re-parse.
+- **No primitive type discrimination** - jsmn does not classify primitives as number / boolean / null. Inspect the first character of the matched range to tell them apart.
+- **No string unescaping** - jsmn returns raw byte ranges. JSON escapes (`\n`, `\uXXXX`, etc.) are the caller's responsibility.
 
-This is a mechanical translation of the upstream C reference. Bridge markers (`// BRIDGE: ...`) in the source mark places where C-specific concepts (pointers, struct layout) are modeled in TypeScript.
+The following C-specific caveats **do not apply** to the TypeScript version:
 
-## Source
+- **Memory leaks** - JavaScript's garbage collector eliminates manual `malloc`/`free` concerns.
+- **Thread safety** - JavaScript is single-threaded; no special thread-safety measures are needed.
+- **C standard compliance** - The code runs wherever TypeScript/JavaScript runs (Node.js, Deno, Bun, browsers).
 
-- Upstream C: [zserge/jsmn](https://github.com/zserge/jsmn) (MIT)
-- This port: TypeScript translation, copyright (c) 2026 Scott Moore (MIT)
+## Acknowledgements
+
+- [Serge Zaitsev](https://github.com/zserge) - original author of jsmn
+- [jsmn contributors](https://github.com/zserge/jsmn/graphs/contributors) - ongoing maintenance of the C library
