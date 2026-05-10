@@ -1,0 +1,44 @@
+{
+  "name": "ts-chibi-base64",
+  "version": "1.1.1",
+  "description": "Fast base64 encoder/decoder, translated to TypeScript from chibi-scheme's base64 implementation by Alex Shinn.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist/",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "node --test --experimental-strip-types tests/vectors.test.ts",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "base64",
+    "encode",
+    "decode",
+    "encoder",
+    "decoder",
+    "chibi-scheme",
+    "typescript",
+    "c-to-ts"
+  ],
+  "author": "Scott Moore",
+  "license": "BSD-3-Clause",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ScottMoore0/ts-chibi-base64.git"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.2",
+    "typescript": "^6.0.3"
+  }
+}
