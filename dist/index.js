@@ -1,0 +1,31 @@
+/**
+ * ts-xxhash
+ *
+ * A zero-dependency TypeScript port of xxHash, the extremely fast
+ * non-cryptographic hash algorithm by Yann Collet. Provides XXH32,
+ * XXH64, and XXH3 (64-bit and 128-bit) hashing for byte buffers and
+ * supports both one-shot and streaming (state-based) APIs.
+ *
+ * Original C: copyright (c) 2012-2021 Yann Collet, BSD-2-Clause.
+ * TypeScript translation: copyright (c) 2026 Scott Moore, released
+ * under the same BSD-2-Clause license.
+ *
+ * See: https://github.com/Cyan4973/xxHash
+ */
+// One-shot hash functions
+export { XXH32, XXH64, XXH3_64bits, XXH3_64bits_withSeed, XXH3_64bits_withSecret, XXH3_64bits_withSecretandSeed, XXH3_128bits, XXH3_128bits_withSeed, XXH3_128bits_withSecret, XXH3_128bits_withSecretandSeed, XXH128, } from './xxhash.js';
+// XXH32 streaming API
+export { XXH32_createState, XXH32_freeState, XXH32_copyState, XXH32_reset, XXH32_update, XXH32_digest, XXH32_canonicalFromHash, XXH32_hashFromCanonical, } from './xxhash.js';
+// XXH64 streaming API
+export { XXH64_createState, XXH64_freeState, XXH64_copyState, XXH64_reset, XXH64_update, XXH64_digest, XXH64_canonicalFromHash, XXH64_hashFromCanonical, } from './xxhash.js';
+// XXH3 streaming API (shared between 64-bit and 128-bit variants)
+export { XXH3_createState, XXH3_freeState, XXH3_copyState, XXH3_64bits_reset, XXH3_64bits_reset_withSeed, XXH3_64bits_reset_withSecret, XXH3_64bits_reset_withSecretandSeed, XXH3_64bits_update, XXH3_64bits_digest, XXH3_128bits_reset, XXH3_128bits_reset_withSeed, XXH3_128bits_reset_withSecret, XXH3_128bits_reset_withSecretandSeed, XXH3_128bits_update, XXH3_128bits_digest, } from './xxhash.js';
+// XXH128 helpers and secret generation
+export { XXH128_isEqual, XXH128_cmp, XXH128_canonicalFromHash, XXH128_hashFromCanonical, XXH3_generateSecret, XXH3_generateSecret_fromSeed, } from './xxhash.js';
+// Public state and canonical types
+export { XXH32_state_s, XXH64_state_s, XXH3_state_s, XXH32_canonical_t, XXH64_canonical_t, XXH128_canonical_t, XXH128_hash_t, } from './xxhash.js';
+// Library version
+export { XXH_versionNumber } from './xxhash.js';
+// xxHash error codes (XXH_OK = 0, XXH_ERROR = 1)
+export const XXH_OK = 0;
+export const XXH_ERROR = 1;

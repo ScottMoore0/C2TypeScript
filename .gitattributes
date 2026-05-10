@@ -1,0 +1,4 @@
+# Linguist hints for accurate language stats on GitHub.
+# The repo is the TypeScript port — dist/ is generated, not source.
+dist/* linguist-generated=true
+*.d.ts linguist-generated=true
