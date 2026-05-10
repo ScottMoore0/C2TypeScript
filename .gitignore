@@ -1,0 +1,46 @@
+# Dependencies
+node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Build output
+dist/
+*.js
+*.js.map
+*.d.ts
+
+# TypeScript cache
+*.tsbuildinfo
+
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Editor directories and files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Test artifacts
+coverage/
+.nyc_output/
+
+# Compiled binaries (safety net)
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Build artifacts
+*.diag.json
+_ts_output/
+.cache/

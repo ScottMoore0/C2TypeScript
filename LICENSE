@@ -1,0 +1,9 @@
+This project is a direct translation of cJSON, from C to TypeScript.
+
+Original cJSON:
+Copyright (c) 2009-2017 Dave Gamble and cJSON contributors
+Licensed under the MIT License.
+
+TypeScript translation:
+Copyright (c) 2026 Scott Moore
+Licensed under the MIT License.

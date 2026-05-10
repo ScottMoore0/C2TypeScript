@@ -1,0 +1,43 @@
+{
+  "name": "ts-cjson",
+  "version": "1.1.1",
+  "description": "A zero-dependency TypeScript port of cJSON, the ultralightweight JSON parser in ANSI C.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist/",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build",
+    "test": "npx tsx tests/vectors.test.ts"
+  },
+  "keywords": [
+    "cjson",
+    "json",
+    "parser",
+    "typescript",
+    "port",
+    "zero-dependency",
+    "json-parser"
+  ],
+  "author": "Scott Moore",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/scottmoore0/ts-cJSON.git"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "typescript": "^6.0.3"
+  }
+}
