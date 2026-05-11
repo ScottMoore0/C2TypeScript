@@ -1,6 +1,6 @@
 # ts-xxhash
 
-A direct TypeScript translation of the extremely fast non-cryptographic hash algorithm xxHash.
+A direct TypeScript translation of the fast non-cryptographic hash algorithm xxHash.
 
 If you find this project useful, you can support this and further ports at [ko-fi.com/scottmoore0](https://ko-fi.com/scottmoore0).
 

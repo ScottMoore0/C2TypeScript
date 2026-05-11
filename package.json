@@ -1,7 +1,7 @@
 {
   "name": "ts-xxhash",
   "version": "1.0.0",
-  "description": "A zero-dependency TypeScript port of xxHash, the extremely fast non-cryptographic hash by Yann Collet. XXH32, XXH64, and XXH3 (64-bit and 128-bit) hashing.",
+  "description": "A zero-dependency TypeScript port of xxHash, the fast non-cryptographic hash by Yann Collet. XXH32, XXH64, and XXH3 (64-bit and 128-bit) hashing.",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

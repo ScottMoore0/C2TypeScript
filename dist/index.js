@@ -1,7 +1,7 @@
 /**
  * ts-xxhash
  *
- * A zero-dependency TypeScript port of xxHash, the extremely fast
+ * A zero-dependency TypeScript port of xxHash, the fast
  * non-cryptographic hash algorithm by Yann Collet. Provides XXH32,
  * XXH64, and XXH3 (64-bit and 128-bit) hashing for byte buffers and
  * supports both one-shot and streaming (state-based) APIs.
