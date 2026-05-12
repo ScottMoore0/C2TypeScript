@@ -1,5 +1,5 @@
 {
-  "name": "@scott/blake2s",
+  "name": "ts-blake2s",
   "version": "1.0.0",
   "description": "Pure-TypeScript port of BLAKE2s (RFC 7693).",
   "type": "module",
