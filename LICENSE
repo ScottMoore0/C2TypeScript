@@ -1,0 +1,24 @@
+This is free and unencumbered software released into the public domain.
+
+Anyone is free to copy, modify, publish, use, compile, sell, or distribute
+this software, either in source code form or as a compiled binary, for any
+purpose, commercial or non-commercial, and by any means.
+
+For more information, please refer to <https://unlicense.org>.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED.
+
+---
+
+Upstream attribution:
+
+This package contains TypeScript code translated from splitmix64.c by
+Sebastiano Vigna, available at https://github.com/jj1bdx/xorshiftplus-c
+and on Vigna's PRNG page at https://prng.di.unimi.it/. The upstream is
+dedicated to the public domain (CC0).
+
+  Written in 2015 by Sebastiano Vigna (vigna@acm.org)
+
+Algorithm: SplitMix64 — Stafford's variant of Vigna's splittable RNG,
+same as Java 8's SplittableRandom.
