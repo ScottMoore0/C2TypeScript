@@ -1,0 +1,25 @@
+                                 Apache License
+                           Version 2.0, January 2004
+                        http://www.apache.org/licenses/
+
+Copyright 2026 Scott Moore
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+
+---
+
+Upstream attribution:
+
+This package contains TypeScript code translated from the C source at
+https://github.com/shixiongfei/adler32 (adler32.c, adler32.h) by Xiongfei Shi
+<jenson.shixf@gmail.com>, Apache License 2.0.
+
+Algorithm: Adler-32 designed by Mark Adler, RFC 1950 §9.

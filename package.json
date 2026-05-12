@@ -1,0 +1,20 @@
+{
+  "name": "ts-adler32",
+  "version": "1.0.0",
+  "description": "A direct TypeScript port of an Adler-32 reference implementation (RFC 1950).",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": { ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" } },
+  "files": ["dist/", "LICENSE", "README.md"],
+  "scripts": {
+    "build": "tsc",
+    "test": "npm run build && node tests/vectors.test.mjs",
+    "prepublishOnly": "npm run build && npm test"
+  },
+  "keywords": ["adler32", "checksum", "rfc1950", "zlib", "deflate", "typescript"],
+  "author": "Scott Moore",
+  "license": "Apache-2.0",
+  "repository": { "type": "git", "url": "git+https://github.com/ScottMoore0/ts-adler32.git" },
+  "devDependencies": { "@types/node": "^22.0.0", "typescript": "^5.6.0" }
+}
