@@ -1,0 +1,20 @@
+{
+  "name": "ts-wjcryptlib-aes",
+  "version": "1.0.0",
+  "description": "TypeScript port of WjCryptLib's AES (Rijndael, FIPS 197). Full AES-128/192/256 ECB.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": { ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" } },
+  "files": ["dist/", "LICENSE", "README.md"],
+  "scripts": {
+    "build": "tsc",
+    "test": "npm run build && node tests/vectors.test.mjs",
+    "prepublishOnly": "npm run build && npm test"
+  },
+  "keywords": ["aes", "rijndael", "fips197", "cryptography", "typescript"],
+  "author": "Scott Moore",
+  "license": "Unlicense",
+  "repository": { "type": "git", "url": "git+https://github.com/ScottMoore0/ts-wjcryptlib-aes.git" },
+  "devDependencies": { "@types/node": "^22.0.0", "typescript": "^5.6.0" }
+}
