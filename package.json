@@ -1,0 +1,20 @@
+{
+  "name": "ts-crc32",
+  "version": "1.0.0",
+  "description": "A direct TypeScript port of a tiny CRC-32 (IEEE 802.3) reference. Zero dependencies, matches zlib/gzip/PNG/Python binascii.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": { ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" } },
+  "files": ["dist/", "LICENSE", "README.md"],
+  "scripts": {
+    "build": "tsc",
+    "test": "npm run build && node tests/vectors.test.mjs",
+    "prepublishOnly": "npm run build && npm test"
+  },
+  "keywords": ["crc32", "checksum", "ieee", "zlib", "gzip", "typescript"],
+  "author": "Scott Moore",
+  "license": "CC0-1.0",
+  "repository": { "type": "git", "url": "git+https://github.com/ScottMoore0/ts-crc32.git" },
+  "devDependencies": { "@types/node": "^22.0.0", "typescript": "^5.6.0" }
+}
