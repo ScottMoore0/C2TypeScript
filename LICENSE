@@ -1,0 +1,32 @@
+BSD 3-Clause License
+
+Copyright (c) 2026, Scott Moore
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice, this
+  list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of the copyright holder nor the names of its contributors
+  may be used to endorse or promote products derived from this software
+  without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES ARE
+DISCLAIMED.
+
+---
+
+Upstream attribution:
+
+This package contains TypeScript code translated from the C source at
+https://github.com/glapa-grossklag/pearson-c (pearson.c, pearson.h) by
+Miles Glapa-Grossklag, BSD 3-Clause License (Copyright 2021).
+
+Algorithm: Peter K. Pearson, "Fast hashing of variable-length text strings",
+Communications of the ACM 33(6), 1990.
