@@ -114,14 +114,14 @@ The output is a base layer that humans or LLMs can refactor toward idiomatic Typ
 
 C2TypeScript emits to a small set of runtime libraries that model C semantics TypeScript does not natively express. These appear in the `vendor/` tree of this repository under literal names:
 
-- `vendor/c-pointer-layout/` - the C pointer model (`CPtr` as `{buf, off}`), heap, numeric primitives, struct layout. (Codename: Basalt.)
-- `vendor/c-stdlib/` - C standard library: `printf`, `string.h`, `stdlib.h`, `math.h`, `ctype.h`, `time.h`. (Codename: Forge.)
-- `vendor/posix-runtime/` - POSIX-shaped surfaces: VFS, environment, process, streams, clock. (Codename: Mirage.)
-- `vendor/browser-runtime/` - browser surfaces (SDL/Canvas, input, audio, storage, network) for C libraries that target the browser. (Codename: Prism.)
+- `vendor/c-pointer-layout/` - the C pointer model (`CPtr` as `{buf, off}`), heap, numeric primitives, struct layout.
+- `vendor/c-stdlib/` - C standard library: `printf`, `string.h`, `stdlib.h`, `math.h`, `ctype.h`, `time.h`.
+- `vendor/posix-runtime/` - POSIX-shaped surfaces: VFS, environment, process, streams, clock.
+- `vendor/browser-runtime/` - browser surfaces (SDL/Canvas, input, audio, storage, network) for C libraries that target the browser.
 
 Each runtime library is its own self-contained TypeScript package. The translator emits `import` statements that reference these by descriptive name.
 
-The repository also vendors a few translator-support libraries under similarly literal names: `clang-frontend/` (Clang AST ingestion), `source-mapping/` (translation-unit-to-output range mapping), `compile-db/` (compile-commands ingest), `dep-graph/` (dependency resolution), `conformance/` (audit and rejection diagnostics), and `validation-harness/` (parity testing). The codenames Ember, Anchor, Dossier, Nexus, Sentinel, and Twinsight respectively are retained inside the vendored source as historical identifiers, but no user-facing documentation in this repository depends on them.
+The repository also vendors a few translator-support libraries under similarly literal names: `clang-frontend/` (Clang AST ingestion), `source-mapping/` (translation-unit-to-output range mapping), `compile-db/` (compile-commands ingest), `dep-graph/` (dependency resolution), `conformance/` (audit and rejection diagnostics), and `validation-harness/` (parity testing).
 
 ---
 

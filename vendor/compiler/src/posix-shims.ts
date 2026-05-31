@@ -396,13 +396,13 @@ export const posixShims: Record<string, string> = {
 
   // =========================================================================
   // 8F.1: Memory mapping — mmap, munmap, mprotect, msync, madvise.
-  //       POSIX.1-2017 §3 <sys/mman.h>. See mirage/src/posix/mman.ts for the
+  //       POSIX.1-2017 §3 <sys/mman.h>. See posix-runtime/src/posix/mman.ts for the
   //       Mirage-VFS-aware variant; the shims below are the standalone-Node
   //       fallback used when translated code runs without a mounted VFS.
   // =========================================================================
 
   // BRIDGE: posix-mmap — POSIX mmap → Uint8Array-backed CPtr {buf, off}.
-  // MVP scope per CLAUDE.md / module header in mirage/src/posix/mman.ts:
+  // MVP scope per CLAUDE.md / module header in posix-runtime/src/posix/mman.ts:
   //   * MAP_ANONYMOUS: full support (zero-filled buffer).
   //   * MAP_PRIVATE file: full support (read-only-for-program semantics —
   //     writes don't propagate back).
@@ -587,7 +587,7 @@ export const posixShims: Record<string, string> = {
   // BLOCKING-EMULATION-PENDING, tracked separately).
   //
   // For this round we implement a self-contained synchronous in-memory
-  // TCP/UDP stack on 127.0.0.1/::1 (mirrors the mirage/NetworkStack
+  // TCP/UDP stack on 127.0.0.1/::1 (mirrors the posix-runtime NetworkStack
   // design). Translated C programs that talk to themselves or to another
   // in-process peer (test harnesses, protocol round-trips) work. Real
   // remote-host connections are NOT supported by these shims.
@@ -602,7 +602,7 @@ export const posixShims: Record<string, string> = {
   ECONNREFUSED=111 ENOTCONN=107. */
 const __net = (() => {
   const g: any = globalThis as any;
-  if (g.__mirage_net) return g.__mirage_net;
+  if (g.__posixRuntime_net) return g.__posixRuntime_net;
   const sockets: Map<number, any> = new Map();
   const listeners: Map<string, any> = new Map();
   const udpBinds: Map<string, any> = new Map();
@@ -670,8 +670,8 @@ const __net = (() => {
     s.rxBytes[0] = first.subarray(n);
     return head;
   };
-  g.__mirage_net = { state, keyOf, parseSockAddr, newSock, rxAvail, rxPull };
-  return g.__mirage_net;
+  g.__posixRuntime_net = { state, keyOf, parseSockAddr, newSock, rxAvail, rxPull };
+  return g.__posixRuntime_net;
 })();`,
 
   socket: `function socket(domain: number, type: number, protocol: number): number {

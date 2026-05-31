@@ -54,12 +54,12 @@ if (onBandA) process.env.c2ts_ON_BAND_A = onBandA;
 // point that does:
 //
 //   import * as __plugin_NAME from "<path>";
-//   import "mirage";  // installs __cpp_register_plugin on globalThis
+//   import "posix-runtime";  // installs __cpp_register_plugin on globalThis
 //   __cpp_register_plugin("NAME", __plugin_NAME);
 //   ...
 //
 // At runtime the translated dlopen("name", ...) routes through the registry
-// shim in mirage/src/posix/dlfcn.ts. This unblocks OpenSSL ENGINE,
+// shim in posix-runtime/src/posix/dlfcn.ts. This unblocks OpenSSL ENGINE,
 // mbedTLS PSA driver registration, nginx dynamic-modules, libcurl auth
 // providers, and any C codebase whose plug-ins can be enumerated at
 // translate time. Plug-in names that aren't pre-listed still resolve to
@@ -109,13 +109,13 @@ function emitPluginRegistryPreamble(outputDir: string, specs: PluginSpec[]): str
   lines.push("// Each `__cpp_register_plugin(name, ns)` wires a JS module under a");
   lines.push("// logical library name so the translated C `dlopen(name, ...)` call");
   lines.push("// resolves to that module's exports. See");
-  lines.push("// c2typescript/mirage/src/posix/dlfcn.ts for the runtime semantics.");
+  lines.push("// c2typescript/posix-runtime/src/posix/dlfcn.ts for the runtime semantics.");
   lines.push("");
-  // Side-effect import of mirage installs __cpp_register_plugin on globalThis.
-  lines.push('import "mirage";');
-  // Also import the function directly in case mirage's side-effect install was
+  // Side-effect import of posix-runtime installs __cpp_register_plugin on globalThis.
+  lines.push('import "posix-runtime";');
+  // Also import the function directly in case posix-runtime's side-effect install was
   // skipped by a sandboxed globalThis.
-  lines.push('import { __cpp_register_plugin } from "mirage";');
+  lines.push('import { __cpp_register_plugin } from "posix-runtime";');
   lines.push("");
   for (const spec of specs) {
     const id = `__plugin_${_pluginIdent(spec.name)}`;

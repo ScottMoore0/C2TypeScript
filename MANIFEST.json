@@ -80,30 +80,30 @@
     ]
   },
   "runtime_subprojects": {
-    "comment": "v1: vendored. v2: migrate to versioned npm dependencies once API surfaces stabilise. Directory names below are codenames retained for source compatibility; literal descriptions appear in README.md.",
+    "comment": "v1: vendored. v2: migrate to versioned npm dependencies once API surfaces stabilise. Directory names are literal descriptions of each vendored component.",
     "include": [
-      "basalt/src/**/*.ts",
-      "forge/src/**/*.ts",
-      "mirage/src/**/*.ts",
-      "anchor/src/**/*.ts"
+      "c-pointer-layout/src/**/*.ts",
+      "c-stdlib/src/**/*.ts",
+      "posix-runtime/src/**/*.ts",
+      "source-mapping/src/**/*.ts"
     ],
     "optional": [
-      "prism/src/**/*.ts",
-      "dossier/src/**/*.ts",
-      "nexus/src/**/*.ts",
-      "sentinel/src/**/*.ts",
-      "twinsight/src/**/*.ts",
-      "ember/src/**/*.ts"
+      "browser-runtime/src/**/*.ts",
+      "compile-db/src/**/*.ts",
+      "dep-graph/src/**/*.ts",
+      "conformance/src/**/*.ts",
+      "validation-harness/src/**/*.ts",
+      "clang-frontend/src/**/*.ts"
     ]
   },
   "exclude": [
     "compiler/src/lua-*.ts",
     "compiler/src/tolua-parser.ts",
-    "compiler/src/orbit-*.ts",
-    "alloy/**/*",
-    "orbit/**/*",
-    "crescent/**/*",
-    "bridge-lua/**/*"
+    "compiler/src/lua-translator-*.ts",
+    "cpp-stdlib/**/*",
+    "lua-translator/**/*",
+    "cpp-frontend-experiment/**/*",
+    "lua-runtime-bridge/**/*"
   ],
   "tests": {
     "comment": "C-cell matrix tests only. Real-world C fixtures (cJSON, sds, xxhash, etc.) are NOT vendored - they would duplicate published ts-* output repositories. To reproduce a real-world translation locally, clone the upstream C source separately and run c2typescript against it. The translated TypeScript output for each demonstrated case is at github.com/ScottMoore0/ts-<name>.",

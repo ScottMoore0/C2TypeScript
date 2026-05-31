@@ -3076,13 +3076,13 @@ ${tsCode.includes("_rng_state") ? "" : "let _rng_state = 42;\n"}` + tsCode;
     tsCode = `function std_println(fmt: string, ...args: any[]): void { process.stdout.write(printf_format(fmt, ...args) + '\\n'); }\n` + tsCode;
   }
 
-  // S1d: C++ <stdexcept> shims — mirror of alloy/src/exception/exceptions.ts
+  // S1d: C++ <stdexcept> shims — mirror of cpp-stdlib/src/exception/exceptions.ts
   // (std_runtime_error, std_logic_error, std_out_of_range, std_invalid_argument,
   // std_overflow_error, std_underflow_error). Alloy's versions inherit from
   // std_exception; ours flatten to Error for the inline case. Behaviourally
   // compatible for `catch (e: std_X)` and `e.what()`. RETIRES-WITH:
   // emitter-stdlib-import-routing (Wave 3 replaces this with an import from
-  // @c2typescript/alloy once the subproject is built-and-distributable).
+  // @c2typescript/cpp-stdlib once the subproject is built-and-distributable).
   if (/\bstd_(?:runtime_error|logic_error|invalid_argument|out_of_range|overflow_error|underflow_error)\b/.test(tsCode) &&
       !tsCode.includes("class std_runtime_error")) {
     tsCode = `class std_runtime_error extends Error { what(): string { return this.message; } }
@@ -3344,7 +3344,7 @@ function any_cast(a: any): any { if (a instanceof std_any) { if (!a.has_value())
   // Inject std_pipe (src + N ops → Iterable) and std_views_*_fn partial
   // closures only when the emitter has lowered a `|` pipeline (detected by
   // the presence of `std_pipe(` in the generated TS). Mirrors the
-  // Alloy-side definitions at alloy/src/ranges/ranges.ts:195-202, 451-503
+  // C++ standard-library definitions at cpp-stdlib/src/ranges/ranges.ts:195-202, 451-503
   // so the translated TS is self-contained without a runtime import.
   if (tsCode.includes("std_pipe(") && !tsCode.includes("function std_pipe")) {
     tsCode = `function std_pipe(src: any, ...ops: Array<(x: any) => any>): any {
@@ -3738,14 +3738,14 @@ let errno = 0;
     ["localeconv(", "function localeconv(): any { return { decimal_point: '.', thousands_sep: ',', grouping: '', int_curr_symbol: '', currency_symbol: '', mon_decimal_point: '.', mon_thousands_sep: ',', mon_grouping: '', positive_sign: '', negative_sign: '-' }; }"],
     // S13: select/poll — routed through Mirage EventLoop (Round 33).
     // POSIX.1-2017 <poll.h>, <sys/select.h>. Delegates to a lazy per-TU
-    // inline EventLoop exposed at globalThis.__mirage_event_loop. A
+    // inline EventLoop exposed at globalThis.__posixRuntime_event_loop. A
     // FdReadinessProbe can be installed by host code
-    // (globalThis.__mirage_event_loop.setProbe(fn)) to report real fd
+    // (globalThis.__posixRuntime_event_loop.setProbe(fn)) to report real fd
     // readiness; without a probe the fallback mirrors the previous stub
     // behaviour (assume all requested events are ready once) so self-tests
     // that don't wire a probe still terminate. The timeout path honours
     // POSIX: <0 infinite, 0 non-block, >0 at-most-Nms. See
-    // c2typescript/mirage/src/event-loop/event-loop.ts (pollViaLoop/selectViaLoop).
+    // c2typescript/posix-runtime/src/event-loop/event-loop.ts (pollViaLoop/selectViaLoop).
     ["poll(", "function poll(fds: any[], nfds: number, timeout: number): number { const loop=__mel(); const deadline=timeout<0?Infinity:Date.now()+Math.max(0,timeout); let ready=0; for(let i=0;i<nfds;i++)if(fds[i])fds[i].revents=0; if(loop.probe){do{const hits=new Map<number,number>(); const handles:any[]=[]; for(let i=0;i<nfds;i++){const f=fds[i]; if(!f)continue; const h=loop.addFdWatch(f.fd,f.events,(rv:number)=>{hits.set(f.fd,rv);}); handles.push(h);} loop.pump(); for(let i=0;i<nfds;i++){const f=fds[i]; if(!f)continue; const r=hits.get(f.fd); if(r!==undefined&&r!==0){f.revents=r; ready++;}} for(const h of handles)h.cancel(); if(ready>0)return ready; if(Date.now()>=deadline)return 0; const waitMs=Math.max(0,Math.min(10,deadline-Date.now())); if(waitMs>0){try{Atomics.wait(new Int32Array(new SharedArrayBuffer(4)),0,0,waitMs);}catch{}}}while(Date.now()<deadline); return 0;} /* fallback: assume requested events are ready once (preserves stub semantics for env-gated tests) */ for(let i=0;i<nfds;i++)if(fds[i])fds[i].revents=fds[i].events; return nfds; }"],
     // S14: pwd/grp/glob (trivial ones)
     ["getpwnam(", "function getpwnam(name: string): any { const u = require('os').userInfo(); return { pw_name: u.username, pw_uid: u.uid, pw_gid: u.gid, pw_dir: u.homedir, pw_shell: '/bin/sh' }; }"],
@@ -3966,14 +3966,14 @@ let errno = 0;
 
     // BSD-sockets skeleton — IEEE Std 1003.1-2017 <sys/socket.h>, <netinet/in.h>,
     // <netdb.h>. In-process SYNCHRONOUS loopback stack on 127.0.0.1/::1. All
-    // shims share state via globalThis.__mirage_net (lazy-init on first call).
+    // shims share state via globalThis.__posixRuntime_net (lazy-init on first call).
     //
     // ASYNC-TO-SYNC HONESTY: Node's real net/dgram APIs are asynchronous, and
     // POSIX expects blocking. We do NOT emulate true blocking; we implement a
     // self-contained sync in-memory stack sufficient for programs that talk to
     // themselves (unit tests, protocol round-trips). Cross-host connections
     // require SharedArrayBuffer + Atomics.wait on a worker — BLOCKING-EMULATION-PENDING.
-    ["socket(", "function __ns(){const g:any=globalThis as any;if(g.__mirage_net)return g.__mirage_net;const st:any={nextId:3,eph:49152,socks:new Map(),lis:new Map(),udp:new Map()};const key=(sa:any)=>`${sa.family}:${(sa.addr===\"0.0.0.0\"||sa.addr===\"::\")?\"127.0.0.1\":sa.addr}:${sa.port}`;const ps=(a:any):any=>{if(!a)return null;if(typeof a===\"object\"&&\"family\" in a&&\"addr\" in a&&\"port\" in a)return a;if(a.buf&&typeof a.off===\"number\"){const dv=new DataView(a.buf.buffer,a.buf.byteOffset+a.off);const fam=dv.getUint16(0,true);if(fam===2){const pt=dv.getUint16(2,false);return{family:2,addr:`${a.buf[a.off+4]}.${a.buf[a.off+5]}.${a.buf[a.off+6]}.${a.buf[a.off+7]}`,port:pt};}return null;}if(typeof a===\"object\"){const fam=a.sin_family??a.sa_family??a.family??2;const pt=a.sin_port??a.port??0;let ad=a.addr;if(!ad&&a.sin_addr){const s=a.sin_addr.s_addr??a.sin_addr;if(typeof s===\"number\")ad=`${(s>>>24)&0xff}.${(s>>>16)&0xff}.${(s>>>8)&0xff}.${s&0xff}`;else ad=String(s);}return{family:fam,addr:ad??\"127.0.0.1\",port:pt};}return null;};g.__mirage_net={st,key,ps};return g.__mirage_net;} function socket(domain: number, type: number, protocol: number): number { const n=__ns(); if(domain!==2&&domain!==10&&domain!==1)return -1; if(type!==1&&type!==2)return -1; const id=n.st.nextId++; n.st.socks.set(id,{id,family:domain,type,protocol,bound:null,listening:false,backlog:0,pend:[],peer:null,peerAddr:null,rx:[],eof:false,udp:[],opts:new Map(),shutWr:false,shutRd:false}); return id; }"],
+    ["socket(", "function __ns(){const g:any=globalThis as any;if(g.__posixRuntime_net)return g.__posixRuntime_net;const st:any={nextId:3,eph:49152,socks:new Map(),lis:new Map(),udp:new Map()};const key=(sa:any)=>`${sa.family}:${(sa.addr===\"0.0.0.0\"||sa.addr===\"::\")?\"127.0.0.1\":sa.addr}:${sa.port}`;const ps=(a:any):any=>{if(!a)return null;if(typeof a===\"object\"&&\"family\" in a&&\"addr\" in a&&\"port\" in a)return a;if(a.buf&&typeof a.off===\"number\"){const dv=new DataView(a.buf.buffer,a.buf.byteOffset+a.off);const fam=dv.getUint16(0,true);if(fam===2){const pt=dv.getUint16(2,false);return{family:2,addr:`${a.buf[a.off+4]}.${a.buf[a.off+5]}.${a.buf[a.off+6]}.${a.buf[a.off+7]}`,port:pt};}return null;}if(typeof a===\"object\"){const fam=a.sin_family??a.sa_family??a.family??2;const pt=a.sin_port??a.port??0;let ad=a.addr;if(!ad&&a.sin_addr){const s=a.sin_addr.s_addr??a.sin_addr;if(typeof s===\"number\")ad=`${(s>>>24)&0xff}.${(s>>>16)&0xff}.${(s>>>8)&0xff}.${s&0xff}`;else ad=String(s);}return{family:fam,addr:ad??\"127.0.0.1\",port:pt};}return null;};g.__posixRuntime_net={st,key,ps};return g.__posixRuntime_net;} function socket(domain: number, type: number, protocol: number): number { const n=__ns(); if(domain!==2&&domain!==10&&domain!==1)return -1; if(type!==1&&type!==2)return -1; const id=n.st.nextId++; n.st.socks.set(id,{id,family:domain,type,protocol,bound:null,listening:false,backlog:0,pend:[],peer:null,peerAddr:null,rx:[],eof:false,udp:[],opts:new Map(),shutWr:false,shutRd:false}); return id; }"],
     ["bind(", "function bind(fd: number, addr: any, addrlen: number): number { const n=__ns(); const s=n.st.socks.get(fd); if(!s)return -1; const sa=n.ps(addr); if(!sa)return -1; let port=sa.port; if(port===0)port=n.st.eph++; const b={family:sa.family,addr:sa.addr,port}; const k=n.key(b); if(s.type===1){if(n.st.lis.has(k))return -1;} else if(s.type===2){if(n.st.udp.has(k))return -1; n.st.udp.set(k,s);} s.bound=b; return 0; }"],
     ["listen(", "function listen(fd: number, backlog: number): number { const n=__ns(); const s=n.st.socks.get(fd); if(!s||s.type!==1||!s.bound)return -1; s.listening=true; s.backlog=Math.max(1,backlog); n.st.lis.set(n.key(s.bound),s); return 0; }"],
     ["accept(", "function accept(fd: number, addr: any, addrlen: any): number { const n=__ns(); const s=n.st.socks.get(fd); if(!s||!s.listening)return -1; const c=s.pend.shift(); if(!c)return -1; if(addr&&c.peerAddr){if(addr.buf){const dv=new DataView(addr.buf.buffer,addr.buf.byteOffset+addr.off);dv.setUint16(0,c.peerAddr.family,true);dv.setUint16(2,c.peerAddr.port,false);const p=String(c.peerAddr.addr).split('.').map((x:string)=>+x);for(let i=0;i<4;i++)addr.buf[addr.off+4+i]=p[i]||0;}else if(typeof addr===\"object\"){addr.sin_family=c.peerAddr.family;addr.sin_port=c.peerAddr.port;addr.addr=c.peerAddr.addr;}} return c.id; }"],
@@ -4295,19 +4295,19 @@ let errno = 0;
   }
   // Mirage EventLoop inline helper (Round 33): emitted once whenever any
   // routing-capable shim is pulled in (poll/select/pselect/ppoll/epoll_*).
-  // Provides a lazy globalThis.__mirage_event_loop with setProbe/addFdWatch/
+  // Provides a lazy globalThis.__posixRuntime_event_loop with setProbe/addFdWatch/
   // pump. The routing shims consult st.probe — when null, they fall back
   // to the previous stub semantics (all requested events ready once) so
   // tests that don't wire a probe still terminate. Mirrors
-  // c2typescript/mirage/src/event-loop/event-loop.ts.
+  // c2typescript/posix-runtime/src/event-loop/event-loop.ts.
   if (/\b(?:poll|select|pselect|ppoll|epoll_(?:create1?|ctl|wait))\(/.test(tsCode) && !tsCode.includes("function __mel(")) {
-    tsCode = "function __mel(){const g:any=globalThis as any;if(g.__mirage_event_loop)return g.__mirage_event_loop;const st:any={probe:null as any,fdWatches:new Map<number,{fd:number,events:number,fn:(r:number)=>void,id:number}>(),nextId:1,setProbe:(p:any)=>{st.probe=p;},addFdWatch:(fd:number,events:number,fn:(r:number)=>void)=>{const id=st.nextId++;st.fdWatches.set(id,{fd,events,fn,id});return {id,cancel:()=>st.fdWatches.delete(id)};},pump:()=>{if(!st.probe||st.fdWatches.size===0)return 0;const snap:any[]=[];for(const w of st.fdWatches.values())snap.push({fd:w.fd,events:w.events});let ready:any=null;try{ready=st.probe(snap);}catch{}if(!ready||ready.size===0)return 0;let ran=0;for(const w of st.fdWatches.values()){const r=ready.get(w.fd);if(r===undefined||r===0)continue;const masked=r&(w.events|0x38);if(masked===0)continue;try{w.fn(masked);}catch{}ran++;}return ran;}};g.__mirage_event_loop=st;return st;}\n" + tsCode;
+    tsCode = "function __mel(){const g:any=globalThis as any;if(g.__posixRuntime_event_loop)return g.__posixRuntime_event_loop;const st:any={probe:null as any,fdWatches:new Map<number,{fd:number,events:number,fn:(r:number)=>void,id:number}>(),nextId:1,setProbe:(p:any)=>{st.probe=p;},addFdWatch:(fd:number,events:number,fn:(r:number)=>void)=>{const id=st.nextId++;st.fdWatches.set(id,{fd,events,fn,id});return {id,cancel:()=>st.fdWatches.delete(id)};},pump:()=>{if(!st.probe||st.fdWatches.size===0)return 0;const snap:any[]=[];for(const w of st.fdWatches.values())snap.push({fd:w.fd,events:w.events});let ready:any=null;try{ready=st.probe(snap);}catch{}if(!ready||ready.size===0)return 0;let ran=0;for(const w of st.fdWatches.values()){const r=ready.get(w.fd);if(r===undefined||r===0)continue;const masked=r&(w.events|0x38);if(masked===0)continue;try{w.fn(masked);}catch{}ran++;}return ran;}};g.__posixRuntime_event_loop=st;return st;}\n" + tsCode;
   }
   // Mirage epoll inline helper (Round 33): lazy per-TU epfd registry at
-  // globalThis.__mirage_epoll. Used by epoll_create/epoll_create1/epoll_ctl/
+  // globalThis.__posixRuntime_epoll. Used by epoll_create/epoll_create1/epoll_ctl/
   // epoll_wait shims to track fd registrations across calls.
   if (/\bepoll_(?:create1?|ctl|wait)\(/.test(tsCode) && !tsCode.includes("function __mep(")) {
-    tsCode = "function __mep(){const g:any=globalThis as any;if(g.__mirage_epoll)return g.__mirage_epoll;const st:any={nextFd:1000,eps:new Map<number,Map<number,{events:number,data:any}>>()}; g.__mirage_epoll=st; return st;}\n" + tsCode;
+    tsCode = "function __mep(){const g:any=globalThis as any;if(g.__posixRuntime_epoll)return g.__posixRuntime_epoll;const st:any={nextFd:1000,eps:new Map<number,Map<number,{events:number,data:any}>>()}; g.__posixRuntime_epoll=st; return st;}\n" + tsCode;
   }
   // Apply trivial shims. C17 §6.2.1: a shim body may declare multiple top-level
   // functions (e.g. socket( entry packs `function __ns(){...} function socket(...)`).
@@ -4343,7 +4343,7 @@ let errno = 0;
   // (TS2304 '__ns' across ed25519-donna and similar fixtures with user-named
   // send()/recv() functions that pattern-match into the network shim path.)
   if (tsCode.includes("__ns(") && !tsCode.includes("function __ns(")) {
-    tsCode = "function __ns(){const g:any=globalThis as any;if(g.__mirage_net)return g.__mirage_net;const st:any={nextId:3,eph:49152,socks:new Map(),lis:new Map(),udp:new Map()};const key=(sa:any)=>`${sa.family}:${(sa.addr===\"0.0.0.0\"||sa.addr===\"::\")?\"127.0.0.1\":sa.addr}:${sa.port}`;const ps=(a:any):any=>{if(!a)return null;if(typeof a===\"object\"&&\"family\" in a&&\"addr\" in a&&\"port\" in a)return a;if(a.buf&&typeof a.off===\"number\"){const dv=new DataView(a.buf.buffer,a.buf.byteOffset+a.off);const fam=dv.getUint16(0,true);if(fam===2){const pt=dv.getUint16(2,false);return{family:2,addr:`${a.buf[a.off+4]}.${a.buf[a.off+5]}.${a.buf[a.off+6]}.${a.buf[a.off+7]}`,port:pt};}return null;}if(typeof a===\"object\"){const fam=a.sin_family??a.sa_family??a.family??2;const pt=a.sin_port??a.port??0;let ad=a.addr;if(!ad&&a.sin_addr){const s=a.sin_addr.s_addr??a.sin_addr;if(typeof s===\"number\")ad=`${(s>>>24)&0xff}.${(s>>>16)&0xff}.${(s>>>8)&0xff}.${s&0xff}`;else ad=String(s);}return{family:fam,addr:ad??\"127.0.0.1\",port:pt};}return null;};g.__mirage_net={st,key,ps};return g.__mirage_net;}\n" + tsCode;
+    tsCode = "function __ns(){const g:any=globalThis as any;if(g.__posixRuntime_net)return g.__posixRuntime_net;const st:any={nextId:3,eph:49152,socks:new Map(),lis:new Map(),udp:new Map()};const key=(sa:any)=>`${sa.family}:${(sa.addr===\"0.0.0.0\"||sa.addr===\"::\")?\"127.0.0.1\":sa.addr}:${sa.port}`;const ps=(a:any):any=>{if(!a)return null;if(typeof a===\"object\"&&\"family\" in a&&\"addr\" in a&&\"port\" in a)return a;if(a.buf&&typeof a.off===\"number\"){const dv=new DataView(a.buf.buffer,a.buf.byteOffset+a.off);const fam=dv.getUint16(0,true);if(fam===2){const pt=dv.getUint16(2,false);return{family:2,addr:`${a.buf[a.off+4]}.${a.buf[a.off+5]}.${a.buf[a.off+6]}.${a.buf[a.off+7]}`,port:pt};}return null;}if(typeof a===\"object\"){const fam=a.sin_family??a.sa_family??a.family??2;const pt=a.sin_port??a.port??0;let ad=a.addr;if(!ad&&a.sin_addr){const s=a.sin_addr.s_addr??a.sin_addr;if(typeof s===\"number\")ad=`${(s>>>24)&0xff}.${(s>>>16)&0xff}.${(s>>>8)&0xff}.${s&0xff}`;else ad=String(s);}return{family:fam,addr:ad??\"127.0.0.1\",port:pt};}return null;};g.__posixRuntime_net={st,key,ps};return g.__posixRuntime_net;}\n" + tsCode;
   }
 
   // Second-pass for transitive time-shim deps: localtime_s/gmtime_s/ctime_s

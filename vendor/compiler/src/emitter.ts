@@ -736,7 +736,7 @@ export class Emitter {
   /** C++20 §20.20 [format] — std::format / vformat / format_to / format_to_n /
    *  make_format_args / formatted_size. When any of these CallExprs is
    *  translated, set this flag so the preamble inlines the std_format runtime
-   *  (a condensed port of alloy/src/format/format.ts). */
+   *  (a condensed port of cpp-stdlib/src/format/format.ts). */
   private usesStdFormat = false;
   private longDoubleInLoop = false;
   /** Item 8: Track whether any long double is used (triggers Decimal prelude + routing) */
@@ -749,7 +749,7 @@ export class Emitter {
    *  Hot-path FP code that never touches fenv stays native. */
   private fenvActiveFunctions = new Set<string>();
   /** Triggered when emitter routes any FP op through `__cpp_fenv_*` —
-   *  emits the preamble import of the helpers from forge. */
+   *  emits the preamble import of the helpers from c-stdlib. */
   private usesFenvDispatch = false;
   /** True when at least one emitted function used `COutParam<T>` for a C
    *  out-pointer parameter (C17 §6.5.3.2 + §6.7.6.1). Drives a single
@@ -3520,10 +3520,10 @@ export class Emitter {
     }
     // C++20 §20.20 [format] — std::format / vformat / format_to / format_to_n /
     // make_format_args / formatted_size runtime. Condensed port of
-    // alloy/src/format/format.ts (lines 1-573); cites sections from the spec.
+    // cpp-stdlib/src/format/format.ts (lines 1-573); cites sections from the spec.
     if (this.usesStdFormat) {
       preamble.push([
-        "// §20.20 [format] — std::format runtime (port of alloy/src/format/format.ts)",
+        "// §20.20 [format] — std::format runtime (port of cpp-stdlib/src/format/format.ts)",
         "class FormatError extends Error { constructor(msg: string) { super(msg); this.name = 'FormatError'; } }",
         "const formatterRegistry: Map<string, any> = new Map();",
         "const formatterSymbol = Symbol.for('std::formatter<T>');",
@@ -7289,7 +7289,7 @@ export class Emitter {
       // implementation. Once we drop the reserved-identifier definition
       // above, the wrapper's body becomes a dangling reference. When the
       // wrapper's whole body is a single `return reservedFn(args)`, drop
-      // the wrapper too — the shim layer (forge:difftime, forge:isalpha,
+      // the wrapper too — the shim layer (c-stdlib:difftime, c-stdlib:isalpha,
       // …) supplies the public-API implementation. This keeps the C17
       // §7.27.2 public surface intact without emitting MSVC inline guts.
       const stmts = (body.inner ?? []) as any[];
@@ -8077,14 +8077,14 @@ export class Emitter {
     // V8/JS-engine memory layout naturally satisfies fundamental alignments
     // (≤8 bytes) for typed-array-backed CPtr storage; for over-alignment
     // (16/32/64 — SSE/AVX, cache-line, page) downstream consumers (SIMD
-    // intrinsic dispatchers, alloy_aligned_alloc) must enforce explicitly.
+    // intrinsic dispatchers, cpp-stdlib_aligned_alloc) must enforce explicitly.
     // The BRIDGE comment makes the requirement locatable for refactoring.
     const declAlign = this.extractDeclAlignment(node);
     if (declAlign.present) {
       if (declAlign.value !== null) {
-        this.writeLine(`/* BRIDGE: _Alignas(${declAlign.value}) — C11 §6.7.5 alignment requirement; JS naturally satisfies fundamental alignments (≤8 bytes), over-alignment must be enforced via alloy_aligned_alloc / SIMD-aware path */`);
+        this.writeLine(`/* BRIDGE: _Alignas(${declAlign.value}) — C11 §6.7.5 alignment requirement; JS naturally satisfies fundamental alignments (≤8 bytes), over-alignment must be enforced via cpp-stdlib_aligned_alloc / SIMD-aware path */`);
       } else {
-        this.writeLine(`/* BRIDGE: _Alignas(type) — C11 §6.7.5 type-form alignment specifier; alignment = _Alignof(type), enforce via alloy_aligned_alloc when used with SIMD/DMA paths */`);
+        this.writeLine(`/* BRIDGE: _Alignas(type) — C11 §6.7.5 type-form alignment specifier; alignment = _Alignof(type), enforce via cpp-stdlib_aligned_alloc when used with SIMD/DMA paths */`);
       }
     }
     const keepKind = (k: string | undefined) =>
@@ -18080,7 +18080,7 @@ export class Emitter {
     // C++20 §20.20 [format] — std::format / std::vformat / std::format_to /
     // std::format_to_n / std::make_format_args / std::formatted_size. Route to
     // the inline std_format runtime (a condensed port of
-    // alloy/src/format/format.ts; see preamble block guarded by
+    // cpp-stdlib/src/format/format.ts; see preamble block guarded by
     // `usesStdFormat`). The C++ callee lives in namespace std, so the
     // rawCalleeName is the unqualified form — match by bare identifier and
     // also accept the qualified spelling for UnresolvedLookupExpr /
@@ -23860,7 +23860,7 @@ export class Emitter {
     // reserved-word / non-constructible type names. `new any(x)` is invalid
     // TS. This arises when the type-mapper sends a C++ type to a TS
     // reserved word (e.g. std::unique_ptr<T> → `any` when the smart-ptr
-    // alloy wrapper is absent; std::any → `any` by design). For std::any
+    // C++ standard-library wrapper is absent; std::any → `any` by design). For std::any
     // specifically we have an Alloy shim `std_any`; rewrite the target.
     // For other reserved-typename cases, pass through the single arg
     // (smart-ptr-style identity elision).
@@ -24217,7 +24217,7 @@ export class Emitter {
     // integer bitwise-or: we require the RHS to be an adaptor-closure call
     // whose callee is a views::<name> niebloid (a structural signal that
     // cannot appear for ordinary integer `|`), AND the LHS to be range-like.
-    // See alloy/src/ranges/ranges.ts lines 195-202 (std_pipe) and 451-503
+    // See cpp-stdlib/src/ranges/ranges.ts lines 195-202 (std_pipe) and 451-503
     // (std_views_*_fn closures).
     if (opName === "operator|" && children.length >= 3) {
       const lhsN = children[1]!;
