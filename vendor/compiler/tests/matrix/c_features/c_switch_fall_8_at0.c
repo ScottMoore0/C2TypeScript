@@ -1,0 +1,27 @@
+/* switch with 8 cases, fallthrough at 0. */
+#include <stdio.h>
+int main(void) {
+  int y = 0;
+  for (int x = 0; x < 8; x++) {
+    switch (x) {
+    case 0: y += 1;
+    case 1: y += 2;
+      break;
+    case 2: y += 3;
+      break;
+    case 3: y += 4;
+      break;
+    case 4: y += 5;
+      break;
+    case 5: y += 6;
+      break;
+    case 6: y += 7;
+      break;
+    case 7: y += 8;
+      break;
+      default: break;
+    }
+  }
+  printf("%d\n", y);
+  return 0;
+}

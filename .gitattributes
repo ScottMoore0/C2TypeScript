@@ -1,0 +1,5 @@
+* text=auto eol=lf
+
+dist/* linguist-generated=true
+*.d.ts linguist-generated=true
+*.d.ts.map linguist-generated=true

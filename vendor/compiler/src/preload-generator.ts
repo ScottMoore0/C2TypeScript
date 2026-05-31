@@ -1,0 +1,209 @@
+/**
+ * Phase R5: Asset preload generator.
+ * Scans translated code for file paths loaded during initialization
+ * (before the main loop) and generates a preload manifest + fetch code.
+ */
+
+import { readdirSync, readFileSync, statSync } from "node:fs";
+import { join } from "node:path";
+import type { EntryPoint } from "./entry-point-detector.js";
+
+export interface PreloadResult {
+  manifest: string[];
+  generatedCode: string;
+}
+
+/** File extensions that should be preloaded as assets */
+const ASSET_EXTENSIONS = new Set([
+  ".png", ".jpg", ".jpeg", ".bmp", ".gif", ".webp", ".svg",
+  ".wav", ".mp3", ".ogg", ".flac",
+  ".ttf", ".otf", ".woff", ".woff2",
+  ".json", ".xml", ".cfg", ".ini", ".txt", ".dat",
+  ".lua",
+]);
+
+/**
+ * Scan for all asset paths referenced in the project,
+ * prioritizing those loaded during initialization (before the main loop).
+ */
+export function generatePreloadManifest(
+  projectDir: string,
+  entry: EntryPoint,
+  basePath: string,
+): PreloadResult {
+  const allPaths = collectAllAssetPaths(projectDir);
+  const initPaths = collectInitPaths(projectDir, entry);
+
+  // Prioritize init paths, then add remaining paths
+  const manifest = [...new Set([...initPaths, ...allPaths])];
+
+  if (manifest.length === 0) {
+    return { manifest: [], generatedCode: "// No assets to preload.\n" };
+  }
+
+  const code = generatePreloadCode(manifest, basePath);
+  return { manifest, generatedCode: code };
+}
+
+/**
+ * Collect asset paths from all files.
+ */
+function collectAllAssetPaths(projectDir: string): string[] {
+  const paths = new Set<string>();
+  const allCode = readAllTsCode(projectDir);
+
+  // Match string literals that look like file paths with known extensions
+  const extPattern = [...ASSET_EXTENSIONS].map(e => e.replace(".", "\\.")).join("|");
+  const re = new RegExp(`["']([^"'\\n]+(?:${extPattern}))["']`, "g");
+  for (const match of allCode.matchAll(re)) {
+    const p = normalizePath(match[1]);
+    if (p.length > 2 && !p.startsWith("http") && !p.startsWith("//")) {
+      paths.add(p);
+    }
+  }
+
+  return [...paths].sort();
+}
+
+/**
+ * Collect paths loaded during initialization — before the main loop.
+ * Heuristic: paths in the entry file before a while/for(;;) loop,
+ * and paths in functions called from global scope or init functions.
+ */
+function collectInitPaths(projectDir: string, entry: EntryPoint): string[] {
+  const filePath = join(projectDir, entry.entryFile);
+  let code: string;
+  try { code = readFileSync(filePath, "utf-8"); } catch { return []; }
+
+  const lines = code.split("\n");
+  const paths = new Set<string>();
+
+  // Find the main loop start line
+  let loopLine = lines.length; // default: entire file is init
+  for (let i = 0; i < lines.length; i++) {
+    if (/^\s*(while\s*\(|for\s*\(;;\))/.test(lines[i])) {
+      loopLine = i;
+      break;
+    }
+  }
+
+  // Extract paths from code before the loop
+  const initCode = lines.slice(0, loopLine).join("\n");
+  const extPattern = [...ASSET_EXTENSIONS].map(e => e.replace(".", "\\.")).join("|");
+  const re = new RegExp(`["']([^"'\\n]+(?:${extPattern}))["']`, "g");
+  for (const match of initCode.matchAll(re)) {
+    const p = normalizePath(match[1]);
+    if (p.length > 2 && !p.startsWith("http")) paths.add(p);
+  }
+
+  // Also look at functions named init/setup/load that are called before the loop
+  const initFuncNames = new Set<string>();
+  const callRe = /\b(\w*(?:init|setup|load|preload|start)\w*)\s*\(/gi;
+  for (const match of initCode.matchAll(callRe)) {
+    initFuncNames.add(match[1]);
+  }
+
+  // Find those function bodies and extract paths from them
+  for (const funcName of initFuncNames) {
+    const funcRe = new RegExp(`function\\s+${funcName}\\s*\\([^)]*\\)[^{]*\\{`);
+    const funcMatch = code.match(funcRe);
+    if (!funcMatch || funcMatch.index === undefined) continue;
+    const start = funcMatch.index + funcMatch[0].length;
+    let depth = 1;
+    let end = start;
+    for (let i = start; i < code.length && depth > 0; i++) {
+      if (code[i] === "{") depth++;
+      if (code[i] === "}") depth--;
+      end = i;
+    }
+    const funcBody = code.slice(start, end);
+    for (const match of funcBody.matchAll(re)) {
+      const p = normalizePath(match[1]);
+      if (p.length > 2 && !p.startsWith("http")) paths.add(p);
+    }
+  }
+
+  return [...paths];
+}
+
+function generatePreloadCode(manifest: string[], basePath: string): string {
+  const manifestJson = JSON.stringify(manifest, null, 2);
+
+  // S_sys2.4b: VFS import + instantiation
+  let vfsHeader = `import { VirtualFS } from "./runtime/virtual-fs.js";
+const vfs = new VirtualFS();
+(globalThis as any).__vfs = vfs;
+
+`;
+
+  // S_sys2.4a: VFS population — fetch each asset into the VFS
+  let vfsPopulation = "";
+  for (const path of manifest) {
+    const safePath = path.replace(/\\/g, "/").replace(/^\.\//, "");
+    vfsPopulation += `  await fetch("assets/${safePath}").then(r => r.arrayBuffer()).then(buf => vfs.preload("${safePath}", new Uint8Array(buf)));\n`;
+  }
+
+  return `${vfsHeader}// Asset preloader — generated by src2ts
+const __preload_manifest: string[] = ${manifestJson};
+
+const __asset_cache = new Map<string, Blob>();
+(globalThis as any).__asset_cache = __asset_cache;
+
+async function __preloadAssets(basePath: string): Promise<void> {
+  // Populate VFS with fetched assets
+${vfsPopulation}
+  const results = await Promise.allSettled(
+    __preload_manifest.map(async (path) => {
+      const url = basePath + "/" + path.replace(/^\\.[\\/]/, "");
+      try {
+        const response = await fetch(url);
+        if (!response.ok) return; // skip missing assets silently
+        const blob = await response.blob();
+        __asset_cache.set(path, blob);
+        // Pre-decode images for synchronous access
+        if (blob.type.startsWith("image/")) {
+          try {
+            const bitmap = await createImageBitmap(blob);
+            (globalThis as any).__image_cache ??= new Map();
+            (globalThis as any).__image_cache.set(path, bitmap);
+          } catch { /* non-decodable image format */ }
+        }
+      } catch { /* network error — skip */ }
+    })
+  );
+  const loaded = results.filter(r => r.status === "fulfilled").length;
+  console.log(\`[preload] \${loaded}/\${__preload_manifest.length} assets loaded\`);
+}
+
+// Synchronous asset access (returns cached blob or null)
+function __getAsset(path: string): Blob | null {
+  return __asset_cache.get(path) ?? null;
+}
+(globalThis as any).__getAsset = __getAsset;
+
+// Start preloading immediately
+const __preloadPromise = __preloadAssets(${JSON.stringify(basePath)});
+(globalThis as any).__preloadPromise = __preloadPromise;
+`;
+}
+
+function normalizePath(p: string): string {
+  return p.replace(/\\\\/g, "/").replace(/\\/g, "/");
+}
+
+function readAllTsCode(projectDir: string): string {
+  const parts: string[] = [];
+  function walk(dir: string): void {
+    try {
+      for (const entry of readdirSync(dir)) {
+        if (["node_modules", "dist", "shims", "runtime", ".git"].includes(entry)) continue;
+        const full = join(dir, entry);
+        if (statSync(full).isDirectory()) { walk(full); continue; }
+        if (!entry.endsWith(".ts") || entry.endsWith(".d.ts")) continue;
+        try { parts.push(readFileSync(full, "utf-8")); } catch { /* skip */ }
+      }
+    } catch { /* unreadable dir */ }
+  }
+  walk(projectDir);
+  return parts.join("\n");
+}

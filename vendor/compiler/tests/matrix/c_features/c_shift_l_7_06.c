@@ -1,0 +1,7 @@
+/* 7 << 6. */
+#include <stdio.h>
+int main(void) {
+  unsigned int v = 0x7u;
+  printf("%X\n", v << 6);
+  return 0;
+}

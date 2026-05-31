@@ -1,0 +1,7 @@
+/* 1.0 <= 100.0. */
+#include <stdio.h>
+int main(void) {
+  double a = 1.0, b = 100.0;
+  printf("%d\n", (a <= b) ? 1 : 0);
+  return 0;
+}

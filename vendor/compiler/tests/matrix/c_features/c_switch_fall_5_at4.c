@@ -1,0 +1,21 @@
+/* switch with 5 cases, fallthrough at 4. */
+#include <stdio.h>
+int main(void) {
+  int y = 0;
+  for (int x = 0; x < 5; x++) {
+    switch (x) {
+    case 0: y += 1;
+      break;
+    case 1: y += 2;
+      break;
+    case 2: y += 3;
+      break;
+    case 3: y += 4;
+      break;
+    case 4: y += 5;
+      default: break;
+    }
+  }
+  printf("%d\n", y);
+  return 0;
+}

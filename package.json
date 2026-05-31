@@ -1,0 +1,34 @@
+{
+  "name": "c2typescript",
+  "version": "0.1.0-pre",
+  "private": true,
+  "description": "C2TypeScript - an in-progress, partial-coverage C-to-TypeScript translator. Produces refactorable TypeScript from a meaningful subset of C17 source.",
+  "license": "MIT",
+  "author": "Scott Moore",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "c2typescript": "dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "UNIVERSALITY_CONTRACT.md"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "echo \"Test harness pending — see SPLIT_PLAN.md atom C3\" && exit 0",
+    "vendor": "tsx ../compiler/scripts/build-split-repo.ts C2TypeScript"
+  },
+  "keywords": [
+    "c",
+    "typescript",
+    "transpiler",
+    "translator",
+    "c17"
+  ],
+  "engines": {
+    "node": ">=18"
+  }
+}

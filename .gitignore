@@ -1,0 +1,16 @@
+node_modules/
+dist/
+.cache/
+.npm-cache/
+*.log
+.DS_Store
+.vscode/
+.idea/
+
+# Build artefacts from example translations.
+examples/_out/
+examples/_cjson_out/
+examples/**/_ts_output/
+
+# The vendor/ tree is intentionally committed in the GitHub snapshot. It is
+# the standalone source payload for this early-preview repository.

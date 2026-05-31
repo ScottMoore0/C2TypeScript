@@ -1,0 +1,6 @@
+/* 7 == 3 */
+#include <stdio.h>
+int main(void) {
+  printf("%d\n", (7 == 3) ? 1 : 0);
+  return 0;
+}
