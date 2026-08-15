@@ -1,0 +1,15 @@
+MIT License
+
+Copyright (c) 2026 Scott Moore
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction.
+
+---
+
+Upstream attribution:
+
+This package contains TypeScript code translated from the C source at
+https://github.com/deemru/b58 (b58.c, b58.h) by Dmitrii Pichulin, MIT
+License (Copyright (c) 2018 Dmitrii Pichulin).
