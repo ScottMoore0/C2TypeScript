@@ -1,0 +1,20 @@
+{
+  "name": "ts-soundex",
+  "version": "1.0.0",
+  "description": "TypeScript port of zoundx — classical American Soundex phonetic encoding.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": { ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" } },
+  "files": ["dist/", "LICENSE", "README.md"],
+  "scripts": {
+    "build": "tsc",
+    "test": "npm run build && node tests/vectors.test.mjs",
+    "prepublishOnly": "npm run build && npm test"
+  },
+  "keywords": ["soundex", "phonetic", "fuzzy-name-match", "typescript"],
+  "author": "Scott Moore",
+  "license": "MIT",
+  "repository": { "type": "git", "url": "git+https://github.com/ScottMoore0/ts-soundex.git" },
+  "devDependencies": { "@types/node": "^22.0.0", "typescript": "^5.6.0" }
+}
