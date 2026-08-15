@@ -1,0 +1,41 @@
+{
+  "name": "ts-md5",
+  "version": "1.0.0",
+  "description": "A zero-dependency TypeScript port of the RFC 1321 MD5 reference implementation by Bryce Wilson. Note: MD5 is cryptographically broken and should not be used for security purposes; suitable for checksums and legacy interop only.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist/",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "node tests/vectors.test.mjs",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "md5",
+    "hash",
+    "rfc1321",
+    "digest",
+    "c-to-ts"
+  ],
+  "author": "Scott Moore",
+  "license": "Unlicense",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ScottMoore0/ts-md5.git"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.2",
+    "typescript": "^6.0.3"
+  }
+}
