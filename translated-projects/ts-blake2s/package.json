@@ -1,0 +1,43 @@
+{
+  "name": "ts-blake2s",
+  "version": "1.0.0",
+  "description": "Pure-TypeScript port of BLAKE2s (RFC 7693).",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist/",
+    "index.ts",
+    "blake2s.ts",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "node tests/vectors.test.mjs",
+    "prepublishOnly": "npm run build && npm test"
+  },
+  "license": "CC0-1.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ScottMoore0/ts-blake2s.git"
+  },
+  "keywords": [
+    "blake2s",
+    "blake2",
+    "rfc7693",
+    "cryptographic-hash",
+    "mac",
+    "pure-typescript"
+  ],
+  "devDependencies": {
+    "@types/node": "^25.7.0",
+    "typescript": "^5.9.3"
+  }
+}
