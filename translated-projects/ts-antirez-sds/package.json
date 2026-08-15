@@ -1,0 +1,42 @@
+{
+  "name": "ts-antirez-sds",
+  "version": "1.1.2",
+  "description": "Simple Dynamic Strings (the C string library used by Redis), translated to TypeScript",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist/",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "node --test --experimental-strip-types tests/sds.test.ts",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "sds",
+    "dynamic-strings",
+    "redis",
+    "string",
+    "c-to-ts",
+    "typescript"
+  ],
+  "author": "Scott Moore",
+  "license": "BSD-2-Clause",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ScottMoore0/ts-antirez-sds.git"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.2",
+    "typescript": "^6.0.3"
+  }
+}
