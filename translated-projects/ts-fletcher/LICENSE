@@ -1,0 +1,17 @@
+MIT License
+
+Copyright (c) 2026 Scott Moore
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction.
+
+---
+
+Upstream attribution:
+
+This package contains TypeScript code translated from the C source at
+https://github.com/lenniea/fletcher (fletcher.c, fletcher.h), MIT License.
+
+Algorithm: Fletcher's checksum (Fletcher 1982); RFC 1146 §C standardises
+Fletcher-16 for TCP options.
