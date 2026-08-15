@@ -1,0 +1,17 @@
+MIT License
+
+Copyright (c) 2026 Scott Moore
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction.
+
+---
+
+Upstream attribution:
+
+This package contains TypeScript code translated from
+https://github.com/DaveCTurner/tiny-ripemd160 (ripemd160.c, ripemd160.h)
+by David Turner, MIT License (Copyright (c) 2021 David Turner).
+
+Algorithm: RIPEMD-160 by Hans Dobbertin, Antoon Bosselaers, Bart Preneel (1996).
