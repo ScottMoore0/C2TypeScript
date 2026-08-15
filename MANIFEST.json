@@ -1,4 +1,4 @@
-﻿{
+{
   "$schema": "../scripts/split-manifest.schema.json",
   "name": "C2TypeScript",
   "version": "0.1.0-pre",
