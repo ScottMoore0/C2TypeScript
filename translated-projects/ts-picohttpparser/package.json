@@ -1,0 +1,44 @@
+{
+  "name": "ts-picohttpparser",
+  "version": "1.0.2",
+  "description": "Tiny HTTP/1.x request, response, and header parser, translated to TypeScript",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist/",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "node --test --experimental-strip-types tests/picohttpparser.test.ts",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "picohttpparser",
+    "http",
+    "http-parser",
+    "parser",
+    "request",
+    "response",
+    "chunked",
+    "c-to-ts"
+  ],
+  "author": "Scott Moore",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ScottMoore0/ts-picohttpparser.git"
+  },
+  "devDependencies": {
+    "@types/node": "^22.19.18",
+    "typescript": "^5.9.3"
+  }
+}
