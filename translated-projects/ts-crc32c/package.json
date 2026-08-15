@@ -1,0 +1,20 @@
+{
+  "name": "ts-crc32c",
+  "version": "1.0.0",
+  "description": "TypeScript port of a CRC-32C (Castagnoli) reference. Used by iSCSI, SCTP, Btrfs, RocksDB.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": { ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" } },
+  "files": ["dist/", "LICENSE", "README.md"],
+  "scripts": {
+    "build": "tsc",
+    "test": "npm run build && node tests/vectors.test.mjs",
+    "prepublishOnly": "npm run build && npm test"
+  },
+  "keywords": ["crc32c", "castagnoli", "checksum", "iscsi", "rocksdb", "btrfs", "typescript"],
+  "author": "Scott Moore",
+  "license": "MIT",
+  "repository": { "type": "git", "url": "git+https://github.com/ScottMoore0/ts-crc32c.git" },
+  "devDependencies": { "@types/node": "^22.0.0", "typescript": "^5.6.0" }
+}
