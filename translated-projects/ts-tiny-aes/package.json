@@ -1,0 +1,50 @@
+{
+  "name": "ts-tiny-aes",
+  "version": "1.0.0",
+  "description": "A zero-dependency TypeScript port of tiny-AES-c by kokke. Small portable AES128/192/256 with ECB, CBC, and CTR modes.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist/",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "node --test --experimental-strip-types tests/vectors.test.ts",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "aes",
+    "aes128",
+    "aes192",
+    "aes256",
+    "cbc",
+    "ctr",
+    "ecb",
+    "crypto",
+    "cryptography",
+    "encryption",
+    "tiny-aes",
+    "c-to-ts",
+    "typescript",
+    "zero-dependency"
+  ],
+  "author": "Scott Moore",
+  "license": "Unlicense",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ScottMoore0/ts-tiny-aes.git"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.2",
+    "typescript": "^6.0.3"
+  }
+}
