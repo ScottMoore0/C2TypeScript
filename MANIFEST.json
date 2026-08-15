@@ -1,4 +1,4 @@
-{
+﻿{
   "$schema": "../scripts/split-manifest.schema.json",
   "name": "C2TypeScript",
   "version": "0.1.0-pre",
@@ -106,21 +106,67 @@
     "lua-runtime-bridge/**/*"
   ],
   "tests": {
-    "comment": "C-cell matrix tests only. Real-world C fixtures (cJSON, sds, xxhash, etc.) are NOT vendored - they would duplicate published ts-* output repositories. To reproduce a real-world translation locally, clone the upstream C source separately and run c2typescript against it. The translated TypeScript output for each demonstrated case is at github.com/ScottMoore0/ts-<name>.",
+    "comment": "C-cell matrix tests only. Real-world C fixtures (cJSON, sds, xxhash, etc.) are vendored in-tree under translated-projects/ as git subtrees of the published ts-* repositories, with full upstream history preserved. To reproduce a translation locally, clone the upstream C source separately, run c2typescript against it, and diff the result against translated-projects/ts-<name>.",
     "include_globs": [
       "compiler/tests/matrix/c_features/**/*",
       "compiler/tests/oracle/**/*"
     ]
   },
   "examples": {
-    "comment": "v1: reference upstream ts-* repos by URL. v2: consider bundling minimal example.",
-    "ts_repos_referenced": [
-      "https://github.com/ScottMoore0/ts-cJSON",
-      "https://github.com/ScottMoore0/ts-antirez-sds",
-      "https://github.com/ScottMoore0/ts-tiny-aes",
-      "https://github.com/ScottMoore0/ts-xxhash",
-      "https://github.com/ScottMoore0/ts-picohttpparser",
-      "https://github.com/ScottMoore0/ts-chibi-base64"
+    "comment": "v2: translated real-world outputs are vendored in-tree under translated-projects/. Each subdirectory is a git subtree of the corresponding published ts-* repository with full upstream history preserved. The standalone github.com/ScottMoore0/ts-<name> repositories are archived read-only and remain the 'repository' field target of the published npm packages.",
+    "translated_projects_dir": "translated-projects",
+    "source_language": "C",
+    "count": 49,
+    "projects": [
+      "ts-adler32",
+      "ts-aes-cbc",
+      "ts-aes-ofb",
+      "ts-antirez-sds",
+      "ts-arcfour",
+      "ts-base58",
+      "ts-blake2s",
+      "ts-bos-base64",
+      "ts-chacha20",
+      "ts-chibi-base64",
+      "ts-cJSON",
+      "ts-clibs-list",
+      "ts-crc16",
+      "ts-crc32",
+      "ts-crc32c",
+      "ts-crc8",
+      "ts-damerau-levenshtein",
+      "ts-fastlz",
+      "ts-fletcher",
+      "ts-fnv-hash",
+      "ts-inih",
+      "ts-jsmn",
+      "ts-julianday",
+      "ts-levenshtein",
+      "ts-md2",
+      "ts-md5",
+      "ts-mt19937",
+      "ts-mtwister",
+      "ts-murmur3",
+      "ts-parson",
+      "ts-pcg-basic",
+      "ts-pearson",
+      "ts-picohttpparser",
+      "ts-ripemd160",
+      "ts-rxi-log",
+      "ts-rxi-vec",
+      "ts-sglib",
+      "ts-sha1",
+      "ts-sha2",
+      "ts-sha512",
+      "ts-siphash",
+      "ts-soundex",
+      "ts-splitmix64",
+      "ts-tiny-aes",
+      "ts-tiny-regex-c",
+      "ts-wjcryptlib-aes",
+      "ts-xoshiro128pp",
+      "ts-xtea",
+      "ts-xxhash"
     ]
   }
 }
