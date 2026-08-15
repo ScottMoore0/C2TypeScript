@@ -1,0 +1,40 @@
+{
+  "name": "ts-parson",
+  "version": "1.0.0",
+  "description": "A zero-dependency TypeScript port of parson, a lightweight JSON parser in C by Krzysztof Gabis.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist/",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build",
+    "test": "npx tsx tests/vectors.test.ts"
+  },
+  "keywords": [
+    "parson",
+    "json",
+    "parser",
+    "c-to-ts"
+  ],
+  "author": "Scott Moore",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ScottMoore0/ts-parson.git"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.2",
+    "typescript": "^6.0.3"
+  }
+}
