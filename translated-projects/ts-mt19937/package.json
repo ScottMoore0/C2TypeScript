@@ -1,0 +1,45 @@
+{
+  "name": "ts-mt19937",
+  "version": "1.0.0",
+  "description": "Zero-dependency TypeScript port of the canonical Matsumoto/Nishimura MT19937 Mersenne Twister reference C implementation (mt19937ar.c).",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist/",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "node --test --experimental-strip-types tests/vectors.test.ts",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "mt19937",
+    "mersenne-twister",
+    "matsumoto",
+    "nishimura",
+    "prng",
+    "random",
+    "rng",
+    "typescript",
+    "c-to-ts"
+  ],
+  "author": "Scott Moore",
+  "license": "BSD-3-Clause",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ScottMoore0/ts-mt19937.git"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.2",
+    "typescript": "^6.0.3"
+  }
+}
