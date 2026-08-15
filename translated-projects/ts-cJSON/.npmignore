@@ -1,0 +1,27 @@
+# Source directories not part of the core library
+tests/
+fuzzing/
+src/
+
+# Internal / test files
+test.ts
+driver.ts
+sizeof_probe.ts
+
+# Build config (not needed for consumers)
+tsconfig.json
+
+# OS / editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Safety nets
+*.exe
+*.diag.json
+.cache/
+_ts_output/
