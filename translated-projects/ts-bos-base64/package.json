@@ -1,0 +1,42 @@
+{
+  "name": "ts-bos-base64",
+  "version": "1.0.0",
+  "description": "Pure-TypeScript port of BabyOS algo_base64.c — RFC 4648 Base64 encoder/decoder.",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist/",
+    "index.ts",
+    "base64.ts",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "node tests/vectors.test.mjs",
+    "prepublishOnly": "npm run build && npm test"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ScottMoore0/ts-bos-base64.git"
+  },
+  "keywords": [
+    "base64",
+    "rfc4648",
+    "encoder",
+    "decoder",
+    "pure-typescript"
+  ],
+  "devDependencies": {
+    "@types/node": "^22.19.19",
+    "typescript": "^5.9.3"
+  }
+}
